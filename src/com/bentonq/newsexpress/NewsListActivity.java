@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class NewsListActivity extends Activity {
+
+	private static final String TAG = "NewsListActivity";
 
 	private NewsUpdater mNewsUpdater;
 	private ListView mNewsListView;
@@ -42,8 +45,23 @@ public class NewsListActivity extends Activity {
 		mNewsListView.setOnTouchListener(new View.OnTouchListener() {
 
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
+			public boolean onTouch(View view, MotionEvent event) {
+				final int historySize = event.getHistorySize();
+				final int pointerCount = event.getPointerCount();
+				for (int h = 0; h < historySize; h++) {
+					Log.d(TAG, "At time " + event.getHistoricalEventTime(h));
+					for (int p = 0; p < pointerCount; p++) {
+						Log.d(TAG,
+								"  pointer " + event.getPointerId(p) + " ("
+										+ event.getHistoricalX(p, h) + ", "
+										+ event.getHistoricalY(p, h) + ")");
+					}
+				}
+				Log.d(TAG, "At time " + event.getEventTime());
+				for (int p = 0; p < pointerCount; p++) {
+					Log.d(TAG, "  pointer " + event.getPointerId(p) + " ("
+							+ event.getX(p) + ", " + event.getY(p) + ")");
+				}
 				return false;
 			}
 		});
