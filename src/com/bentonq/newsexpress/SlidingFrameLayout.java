@@ -12,7 +12,9 @@ import android.widget.Scroller;
 public class SlidingFrameLayout extends FrameLayout {
 
 	private static final String TAG = "SlidingFrameLayout";
-	
+
+	private int mSlidingPadding;
+
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
 
@@ -26,26 +28,28 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	public SlidingFrameLayout(Context context) {
 		super(context);
-		init();
+		initSlidingFrameLayout();
 	}
 
 	public SlidingFrameLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		initSlidingFrameLayout();
 	}
 
 	public SlidingFrameLayout(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+		initSlidingFrameLayout();
 	}
 
-	private void init() {
+	private void initSlidingFrameLayout() {
 		mScroller = new Scroller(getContext());
 		final ViewConfiguration configuration = ViewConfiguration
 				.get(getContext());
 		mTouchSlop = configuration.getScaledTouchSlop();
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+
+		mSlidingPadding = 96; // TODO add set/get
 	}
 
 	@Override
@@ -115,7 +119,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		case MotionEvent.ACTION_UP:
 			int scrollX = getScrollX();
 			int scrollY = getScrollY();
-			int width = -getWidth();
+			int width = mSlidingPadding - getWidth();
 			int endX = 0;
 			if (mIsBeingDragged) {
 				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
