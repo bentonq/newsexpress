@@ -82,8 +82,6 @@ public class SlidingFrameLayout extends FrameLayout {
 		mVelocityTracker.addMovement(event);
 
 		final int action = event.getActionMasked();
-		final int motionX = (int) event.getX();
-		final int motionY = (int) event.getY();
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
@@ -95,15 +93,17 @@ public class SlidingFrameLayout extends FrameLayout {
 			mLastMotionY = (int) event.getY();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			int dx = mLastMotionX - motionX;
-			int dy = mLastMotionY - motionY;
+			final int motionX = (int) event.getX();
+			final int motionY = (int) event.getY();
+			int dx = 0;
 			if (mIsBeingDragged) {
+				dx = mLastMotionX - motionX;
 				mLastMotionX = motionX;
-				mLastMotionY = motionY;
 			} else {
-				int absDx = Math.abs(dx);
-				int absDy = Math.abs(dy);
+				int absDx = Math.abs(mLastMotionX - motionX);
+				int absDy = Math.abs(mLastMotionY - motionY);
 				if (absDx > mTouchSlop && absDx > absDy) {
+					dx = mLastMotionX - motionX;
 					if (dx > 0) {
 						dx -= mTouchSlop;
 					} else {
@@ -111,27 +111,26 @@ public class SlidingFrameLayout extends FrameLayout {
 					}
 					mIsBeingDragged = true;
 					mLastMotionX = motionX;
-					mLastMotionY = motionY;
 				}
 			}
 			slideBy(dx);
 			break;
 		case MotionEvent.ACTION_UP:
-			int scrollX = getScrollX();
-			int scrollY = getScrollY();
-			int rightClamp = mSlidingPadding - getWidth();
+			final int scrollX = getScrollX();
+			final int rightClamp = mSlidingPadding - getWidth();
 			int endX = 0;
 			if (mIsBeingDragged) {
 				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
-				int velocity = (int) mVelocityTracker.getXVelocity();
-				if (velocity > mMinimumVelocity) {
+				final int velocity = (int) mVelocityTracker.getXVelocity();
+				Log.v(TAG, "Speed " + velocity + "," + mMinimumVelocity);
+				if (velocity > mMinimumVelocity
+						|| (Math.abs(velocity) < mMinimumVelocity && scrollX < rightClamp / 2)) {
 					endX = rightClamp;
 				}
 			} else if (scrollX < rightClamp / 2) {
 				endX = rightClamp;
 			}
-			mScroller.startScroll(scrollX, scrollY, endX - scrollX, 0);
-			invalidate();
+			flingBy(endX - scrollX);
 			break;
 		case MotionEvent.ACTION_CANCEL:
 			break;
@@ -146,11 +145,18 @@ public class SlidingFrameLayout extends FrameLayout {
 	}
 
 	private void slideBy(int dx) {
-		int rightClamp = mSlidingPadding - getWidth();
-		int newScrollX = getScrollX() + dx;
+		final int rightClamp = mSlidingPadding - getWidth();
+		final int newScrollX = getScrollX() + dx;
 		if (newScrollX < 0 && newScrollX > rightClamp) {
 			scrollBy(dx, 0);
 		}
+	}
+
+	private void flingBy(int dx) {
+		final int scrollX = getScrollX();
+		final int scrollY = getScrollY();
+		mScroller.startScroll(scrollX, scrollY, dx, 0);
+		invalidate();
 	}
 
 	private void initOrResetVelocityTracker() {
