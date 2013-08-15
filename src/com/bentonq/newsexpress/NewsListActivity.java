@@ -45,8 +45,7 @@ public class NewsListActivity extends Activity {
 					}
 				});
 
-		String url = new String(
-				"http://news.163.com/special/00011K6L/rss_newstop.xml");
+		String url = new String("http://www.36kr.com/feed");
 		mNewsUpdater = new NewsUpdater();
 		mNewsUpdater.update(url, new NewsUpdater.UpdateListener() {
 

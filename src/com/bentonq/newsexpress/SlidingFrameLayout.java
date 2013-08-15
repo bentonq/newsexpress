@@ -12,9 +12,7 @@ import android.widget.Scroller;
 public class SlidingFrameLayout extends FrameLayout {
 
 	private static final String TAG = "SlidingFrameLayout";
-	private int mLastMotionX;
-	private int mLastMotionY;
-	private boolean mIsBeingDragged = false;
+	
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
 
@@ -22,8 +20,9 @@ public class SlidingFrameLayout extends FrameLayout {
 	private int mMinimumVelocity;
 	private int mMaximumVelocity;
 
-	private int mOverscrollDistance;
-	private int mOverflingDistance;
+	private boolean mIsBeingDragged = false;
+	private int mLastMotionX;
+	private int mLastMotionY;
 
 	public SlidingFrameLayout(Context context) {
 		super(context);
@@ -47,8 +46,6 @@ public class SlidingFrameLayout extends FrameLayout {
 		mTouchSlop = configuration.getScaledTouchSlop();
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
-		mOverscrollDistance = configuration.getScaledOverscrollDistance();
-		mOverflingDistance = configuration.getScaledOverflingDistance();
 	}
 
 	@Override
@@ -58,8 +55,6 @@ public class SlidingFrameLayout extends FrameLayout {
 			int y = mScroller.getCurrY();
 			scrollTo(x, y);
 			invalidate();
-
-			Log.v(TAG, "computerScroll (" + x + ", " + y + ")");
 		}
 	}
 
@@ -96,20 +91,21 @@ public class SlidingFrameLayout extends FrameLayout {
 			mLastMotionY = (int) event.getY();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			int dx = 0;
+			int dx = mLastMotionX - motionX;
+			int dy = mLastMotionY - motionY;
 			if (mIsBeingDragged) {
-				dx = mLastMotionX - motionX;
 				mLastMotionX = motionX;
+				mLastMotionY = motionY;
 			} else {
-				if (Math.abs(mLastMotionX - motionX) > mTouchSlop
-						&& Math.abs(mLastMotionY - motionY) < 2 * mTouchSlop) {
-					mIsBeingDragged = true;
-					dx = mLastMotionX - motionX;
+				int absDx = Math.abs(dx);
+				int absDy = Math.abs(dy);
+				if (absDx > mTouchSlop && absDx > absDy) {
 					if (dx > 0) {
 						dx -= mTouchSlop;
 					} else {
 						dx += mTouchSlop;
 					}
+					mIsBeingDragged = true;
 					mLastMotionX = motionX;
 					mLastMotionY = motionY;
 				}
@@ -117,18 +113,21 @@ public class SlidingFrameLayout extends FrameLayout {
 			scrollBy(dx, 0);
 			break;
 		case MotionEvent.ACTION_UP:
+			int scrollX = getScrollX();
+			int scrollY = getScrollY();
+			int width = -getWidth();
+			int endX = 0;
 			if (mIsBeingDragged) {
 				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocity = (int) mVelocityTracker.getXVelocity();
-				int scrollX = getScrollX();
-				int scrollY = getScrollY();
-				int endX = 0;
 				if (velocity > mMinimumVelocity) {
-					endX = -getWidth();
+					endX = width;
 				}
-				mScroller.startScroll(scrollX, scrollY, endX - scrollX, 0);
-				invalidate();
+			} else if (scrollX < width / 2) {
+				endX = width;
 			}
+			mScroller.startScroll(scrollX, scrollY, endX - scrollX, 0);
+			invalidate();
 			break;
 		case MotionEvent.ACTION_CANCEL:
 			break;
