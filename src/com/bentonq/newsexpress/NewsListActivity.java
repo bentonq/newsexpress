@@ -6,9 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,6 +26,9 @@ public class NewsListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// Enable hierarchy view locally on real device
+		ViewServer.get(this).addWindow(this);
+
 		mNewsListView = (ListView) findViewById(R.id.news_list);
 		mNewsListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -39,32 +40,10 @@ public class NewsListActivity extends Activity {
 								.getItemAtPosition(position);
 						Intent intent = new Intent(Intent.ACTION_VIEW);
 						intent.setData(Uri.parse(link));
-						startActivity(intent);
+						// startActivity(intent);
+
 					}
 				});
-		mNewsListView.setOnTouchListener(new View.OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				final int historySize = event.getHistorySize();
-				final int pointerCount = event.getPointerCount();
-				for (int h = 0; h < historySize; h++) {
-					Log.d(TAG, "At time " + event.getHistoricalEventTime(h));
-					for (int p = 0; p < pointerCount; p++) {
-						Log.d(TAG,
-								"  pointer " + event.getPointerId(p) + " ("
-										+ event.getHistoricalX(p, h) + ", "
-										+ event.getHistoricalY(p, h) + ")");
-					}
-				}
-				Log.d(TAG, "At time " + event.getEventTime());
-				for (int p = 0; p < pointerCount; p++) {
-					Log.d(TAG, "  pointer " + event.getPointerId(p) + " ("
-							+ event.getX(p) + ", " + event.getY(p) + ")");
-				}
-				return false;
-			}
-		});
 
 		String url = new String(
 				"http://news.163.com/special/00011K6L/rss_newstop.xml");
@@ -113,6 +92,19 @@ public class NewsListActivity extends Activity {
 				});
 			}
 		});
+	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		// For hierarchy view
+		ViewServer.get(this).setFocusedWindow(this);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		// For hierarchy view
+		ViewServer.get(this).removeWindow(this);
 	}
 }
