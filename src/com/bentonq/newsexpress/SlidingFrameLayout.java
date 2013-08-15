@@ -114,21 +114,21 @@ public class SlidingFrameLayout extends FrameLayout {
 					mLastMotionY = motionY;
 				}
 			}
-			scrollBy(dx, 0);
+			slideBy(dx);
 			break;
 		case MotionEvent.ACTION_UP:
 			int scrollX = getScrollX();
 			int scrollY = getScrollY();
-			int width = mSlidingPadding - getWidth();
+			int rightClamp = mSlidingPadding - getWidth();
 			int endX = 0;
 			if (mIsBeingDragged) {
 				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocity = (int) mVelocityTracker.getXVelocity();
 				if (velocity > mMinimumVelocity) {
-					endX = width;
+					endX = rightClamp;
 				}
-			} else if (scrollX < width / 2) {
-				endX = width;
+			} else if (scrollX < rightClamp / 2) {
+				endX = rightClamp;
 			}
 			mScroller.startScroll(scrollX, scrollY, endX - scrollX, 0);
 			invalidate();
@@ -143,6 +143,14 @@ public class SlidingFrameLayout extends FrameLayout {
 	@Override
 	public boolean shouldDelayChildPressedState() {
 		return true;
+	}
+
+	private void slideBy(int dx) {
+		int rightClamp = mSlidingPadding - getWidth();
+		int newScrollX = getScrollX() + dx;
+		if (newScrollX < 0 && newScrollX > rightClamp) {
+			scrollBy(dx, 0);
+		}
 	}
 
 	private void initOrResetVelocityTracker() {
