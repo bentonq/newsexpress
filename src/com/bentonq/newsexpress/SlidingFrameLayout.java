@@ -82,15 +82,20 @@ public class SlidingFrameLayout extends FrameLayout {
 			mLastMotionY = (int) event.getY();
 			mOriginMotionX = mLastMotionX;
 
-			// If being scrolling and user touches, start dragging right now
-			// The user is being blocked to touching the child view at this time
-			mIsBeingDragged = !mScroller.isFinished();
+			// If being scrolling and user touches, start dragging right now.
+			// The user is being blocked to touching the child view at this
+			// time.
+			// But when the scroll animation is almost finish, the user can
+			// touches.
+			mIsBeingDragged = (!mScroller.isFinished() && Math.abs(mScroller
+					.getCurrX() - mScroller.getFinalX()) > 5);
 			break;
 		case MotionEvent.ACTION_MOVE:
 			final int motionX = (int) event.getX();
 			final int motionY = (int) event.getY();
 			if (mIsBeingDragged || isStartDragging(motionX, motionY)) {
 				intercepted = true;
+				initVelocityTrackerIfNotExists();
 				mVelocityTracker.addMovement(event);
 				disallowParentInterceptTouchEvent();
 			}
@@ -103,8 +108,8 @@ public class SlidingFrameLayout extends FrameLayout {
 			break;
 		}
 
-//		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
-//				+ event.getX() + ", " + event.getY() + ")");
+		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
+				+ event.getX() + ", " + event.getY() + ")");
 
 		return intercepted;
 	}
@@ -152,7 +157,8 @@ public class SlidingFrameLayout extends FrameLayout {
 			int endX = 0;
 			if (mIsBeingDragged) {
 				// Check finger movement speed
-				mVelocityTracker.computeCurrentVelocity(1000 /* MS */, mMaximumVelocity);
+				mVelocityTracker.computeCurrentVelocity(1000 /* MS */,
+						mMaximumVelocity);
 				final int velocity = (int) mVelocityTracker.getXVelocity();
 				if (velocity > mMinimumVelocity
 						|| (Math.abs(velocity) < mMinimumVelocity && isScrollXCrossMiddleLine)) {
@@ -181,8 +187,8 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		}
 
-//		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
-//				+ ", " + event.getY() + ")");
+		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
+				+ ", " + event.getY() + ")");
 
 		return true;
 	}
@@ -199,7 +205,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		super.requestDisallowInterceptTouchEvent(disallowIntercept);
 	}
-	
+
 	public int getSlidingPadding() {
 		return mSlidingPadding;
 	}
@@ -208,29 +214,54 @@ public class SlidingFrameLayout extends FrameLayout {
 		mSlidingPadding = slidingPadding;
 	}
 
-
-	private void slideBy(int dx) {
+	public void slideBy(int x) {
 		final int rightClamp = mSlidingPadding - getWidth();
 
 		int newScrollX = 0;
 		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
 			// Use newest position
-			newScrollX = mScroller.getCurrX() + dx;
+			newScrollX = mScroller.getCurrX() + x;
 			mScroller.abortAnimation();
 		} else {
-			newScrollX = getScrollX() + dx;
+			newScrollX = getScrollX() + x;
 		}
 
+		// Never scroll outside the bound
 		if (newScrollX < 0 && newScrollX > rightClamp) {
-			scrollBy(dx, 0);
+			scrollBy(x, 0);
 		}
 	}
 
-	private void flingBy(int dx) {
-		final int scrollX = getScrollX();
-		final int scrollY = getScrollY();
-		mScroller.startScroll(scrollX, scrollY, dx, 0, 100 /* MS */);
-		invalidate();
+	public void flingBy(int x) {
+		final int rightClamp = mSlidingPadding - getWidth();
+
+		int startX = 0;
+		int startY = 0;
+		int dx = 0;
+		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
+			// Use newest position
+			startX = mScroller.getCurrX();
+			startY = mScroller.getCurrY();
+			dx = x + getScrollX() - startX;
+			mScroller.abortAnimation();
+		} else {
+			startX = getScrollX();
+			startY = getScrollY();
+			dx = x;
+		}
+
+		// Never scroll outside the bound
+		int endX = startX + dx;
+		if (endX < rightClamp) {
+			dx = rightClamp - startX;
+		} else if (endX > 0) {
+			dx = -startX;
+		}
+
+		if (dx != 0) {
+			mScroller.startScroll(startX, startY, dx, 0, 500 /* MS */);
+			invalidate();
+		}
 	}
 
 	private boolean isStartDragging(int motionX, int motionY) {
