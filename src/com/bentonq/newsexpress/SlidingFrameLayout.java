@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
+// TODO Adjust animation
 public class SlidingFrameLayout extends FrameLayout {
 
 	private static final String TAG = "SlidingFrameLayout";
@@ -44,13 +46,14 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	private void initSlidingFrameLayout() {
 		mScroller = new Scroller(getContext());
+
 		final ViewConfiguration configuration = ViewConfiguration
 				.get(getContext());
 		mTouchSlop = configuration.getScaledTouchSlop();
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
 
-		mSlidingPadding = 96; // TODO add set/get
+		mSlidingPadding = 0;
 	}
 
 	@Override
@@ -65,55 +68,78 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent event) {
-		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
-				+ event.getX() + ", " + event.getY() + ")");
-
 		boolean intercepted = false;
+
+		final int action = event.getActionMasked();
+		switch (action) {
+		case MotionEvent.ACTION_DOWN:
+			// Reset velocity tracker
+			initOrResetVelocityTracker();
+			mVelocityTracker.addMovement(event);
+
+			// Remember touch location
+			mLastMotionX = (int) event.getX();
+			mLastMotionY = (int) event.getY();
+			mOriginMotionX = mLastMotionX;
+
+			// If being scrolling and user touches, start dragging right now
+			// The user is being blocked to touching the child view at this time
+			mIsBeingDragged = !mScroller.isFinished();
+			break;
+		case MotionEvent.ACTION_MOVE:
+			final int motionX = (int) event.getX();
+			final int motionY = (int) event.getY();
+			if (mIsBeingDragged || isStartDragging(motionX, motionY)) {
+				intercepted = true;
+				mVelocityTracker.addMovement(event);
+				disallowParentInterceptTouchEvent();
+			}
+			break;
+		case MotionEvent.ACTION_UP:
+		case MotionEvent.ACTION_CANCEL:
+			// Reset the drag
+			mIsBeingDragged = false;
+			recycleVelocityTracker();
+			break;
+		}
+
+//		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
+//				+ event.getX() + ", " + event.getY() + ")");
+
 		return intercepted;
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
-				+ ", " + event.getY() + ")");
-
-		if (mVelocityTracker == null) {
-			mVelocityTracker = VelocityTracker.obtain();
-		}
+		initVelocityTrackerIfNotExists();
 		mVelocityTracker.addMovement(event);
 
 		final int action = event.getActionMasked();
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
+			// If is scrolling, stop it
 			if (!mScroller.isFinished()) {
 				mScroller.abortAnimation();
 			}
-			mIsBeingDragged = false;
-			mLastMotionX = (int) event.getX();
-			mLastMotionY = (int) event.getY();
-			mOriginMotionX = mLastMotionX;
 			break;
 		case MotionEvent.ACTION_MOVE: {
+			// Follow finger touches
 			final int motionX = (int) event.getX();
 			final int motionY = (int) event.getY();
 			int dx = 0;
 			if (mIsBeingDragged) {
 				dx = mLastMotionX - motionX;
 				mLastMotionX = motionX;
-			} else {
-				int absDx = Math.abs(mLastMotionX - motionX);
-				int absDy = Math.abs(mLastMotionY - motionY);
-				if (absDx > mTouchSlop && absDx > absDy) {
-					dx = mLastMotionX - motionX;
-					if (dx > 0) {
-						dx -= mTouchSlop;
-					} else {
-						dx += mTouchSlop;
-					}
-					mIsBeingDragged = true;
-					mLastMotionX = motionX;
+			} else if (isStartDragging(motionX, motionY)) {
+				dx = mLastMotionX - motionX;
+				// Avoid glitter
+				if (dx > 0) {
+					dx -= mTouchSlop;
+				} else {
+					dx += mTouchSlop;
 				}
+				mLastMotionX = motionX;
 			}
 			slideBy(dx);
 			break;
@@ -125,7 +151,8 @@ public class SlidingFrameLayout extends FrameLayout {
 					: false;
 			int endX = 0;
 			if (mIsBeingDragged) {
-				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+				// Check finger movement speed
+				mVelocityTracker.computeCurrentVelocity(1000 /* MS */, mMaximumVelocity);
 				final int velocity = (int) mVelocityTracker.getXVelocity();
 				if (velocity > mMinimumVelocity
 						|| (Math.abs(velocity) < mMinimumVelocity && isScrollXCrossMiddleLine)) {
@@ -135,9 +162,11 @@ public class SlidingFrameLayout extends FrameLayout {
 				endX = rightClamp;
 			}
 			flingBy(endX - scrollX);
+			recycleVelocityTracker();
 			break;
 		}
 		case MotionEvent.ACTION_CANCEL: {
+			// Reset to origin position
 			final int scrollX = getScrollX();
 			final int rightClamp = mSlidingPadding - getWidth();
 			final boolean isOriginXCrossMiddleLine = (mOriginMotionX < rightClamp / 2) ? true
@@ -147,10 +176,13 @@ public class SlidingFrameLayout extends FrameLayout {
 				endX = rightClamp;
 			}
 			flingBy(endX - scrollX);
-			mVelocityTracker.clear();
+			recycleVelocityTracker();
 			break;
 		}
 		}
+
+//		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
+//				+ ", " + event.getY() + ")");
 
 		return true;
 	}
@@ -160,9 +192,35 @@ public class SlidingFrameLayout extends FrameLayout {
 		return true;
 	}
 
+	@Override
+	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+		if (disallowIntercept) {
+			recycleVelocityTracker();
+		}
+		super.requestDisallowInterceptTouchEvent(disallowIntercept);
+	}
+	
+	public int getSlidingPadding() {
+		return mSlidingPadding;
+	}
+
+	public void setSlidingPadding(int slidingPadding) {
+		mSlidingPadding = slidingPadding;
+	}
+
+
 	private void slideBy(int dx) {
 		final int rightClamp = mSlidingPadding - getWidth();
-		final int newScrollX = getScrollX() + dx;
+
+		int newScrollX = 0;
+		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
+			// Use newest position
+			newScrollX = mScroller.getCurrX() + dx;
+			mScroller.abortAnimation();
+		} else {
+			newScrollX = getScrollX() + dx;
+		}
+
 		if (newScrollX < 0 && newScrollX > rightClamp) {
 			scrollBy(dx, 0);
 		}
@@ -171,8 +229,17 @@ public class SlidingFrameLayout extends FrameLayout {
 	private void flingBy(int dx) {
 		final int scrollX = getScrollX();
 		final int scrollY = getScrollY();
-		mScroller.startScroll(scrollX, scrollY, dx, 0);
+		mScroller.startScroll(scrollX, scrollY, dx, 0, 100 /* MS */);
 		invalidate();
+	}
+
+	private boolean isStartDragging(int motionX, int motionY) {
+		int absDx = Math.abs(mLastMotionX - motionX);
+		int absDy = Math.abs(mLastMotionY - motionY);
+		if (absDx > mTouchSlop && absDx > absDy) {
+			return mIsBeingDragged = true;
+		}
+		return false;
 	}
 
 	private void initOrResetVelocityTracker() {
@@ -193,6 +260,13 @@ public class SlidingFrameLayout extends FrameLayout {
 		if (mVelocityTracker != null) {
 			mVelocityTracker.recycle();
 			mVelocityTracker = null;
+		}
+	}
+
+	private void disallowParentInterceptTouchEvent() {
+		final ViewParent parent = getParent();
+		if (parent != null) {
+			parent.requestDisallowInterceptTouchEvent(true);
 		}
 	}
 }
