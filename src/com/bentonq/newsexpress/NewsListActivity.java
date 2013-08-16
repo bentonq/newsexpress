@@ -38,10 +38,9 @@ public class NewsListActivity extends Activity {
 							int position, long id) {
 						String link = (String) parent
 								.getItemAtPosition(position);
-						Intent intent = new Intent(Intent.ACTION_VIEW);
+						Intent intent = new Intent(NewsListActivity.this, NewsActivity.class);
 						intent.setData(Uri.parse(link));
-						// startActivity(intent);
-
+						startActivity(intent);
 					}
 				});
 
@@ -91,6 +90,9 @@ public class NewsListActivity extends Activity {
 				});
 			}
 		});
+		
+		SlidingFrameLayout slidingPanel = (SlidingFrameLayout) findViewById(R.id.sliding_panel);
+		slidingPanel.setSlidingPadding(240 /* PIX */);
 	}
 
 	@Override
