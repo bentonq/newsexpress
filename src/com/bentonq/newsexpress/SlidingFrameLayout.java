@@ -25,6 +25,7 @@ public class SlidingFrameLayout extends FrameLayout {
 	private boolean mIsBeingDragged = false;
 	private int mLastMotionX;
 	private int mLastMotionY;
+	private int mOriginMotionX;
 
 	public SlidingFrameLayout(Context context) {
 		super(context);
@@ -91,8 +92,9 @@ public class SlidingFrameLayout extends FrameLayout {
 			mIsBeingDragged = false;
 			mLastMotionX = (int) event.getX();
 			mLastMotionY = (int) event.getY();
+			mOriginMotionX = mLastMotionX;
 			break;
-		case MotionEvent.ACTION_MOVE:
+		case MotionEvent.ACTION_MOVE: {
 			final int motionX = (int) event.getX();
 			final int motionY = (int) event.getY();
 			int dx = 0;
@@ -115,25 +117,39 @@ public class SlidingFrameLayout extends FrameLayout {
 			}
 			slideBy(dx);
 			break;
-		case MotionEvent.ACTION_UP:
+		}
+		case MotionEvent.ACTION_UP: {
 			final int scrollX = getScrollX();
 			final int rightClamp = mSlidingPadding - getWidth();
+			final boolean isScrollXCrossMiddleLine = (scrollX < rightClamp / 2) ? true
+					: false;
 			int endX = 0;
 			if (mIsBeingDragged) {
 				mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				final int velocity = (int) mVelocityTracker.getXVelocity();
-				Log.v(TAG, "Speed " + velocity + "," + mMinimumVelocity);
 				if (velocity > mMinimumVelocity
-						|| (Math.abs(velocity) < mMinimumVelocity && scrollX < rightClamp / 2)) {
+						|| (Math.abs(velocity) < mMinimumVelocity && isScrollXCrossMiddleLine)) {
 					endX = rightClamp;
 				}
-			} else if (scrollX < rightClamp / 2) {
+			} else if (isScrollXCrossMiddleLine) {
 				endX = rightClamp;
 			}
 			flingBy(endX - scrollX);
 			break;
-		case MotionEvent.ACTION_CANCEL:
+		}
+		case MotionEvent.ACTION_CANCEL: {
+			final int scrollX = getScrollX();
+			final int rightClamp = mSlidingPadding - getWidth();
+			final boolean isOriginXCrossMiddleLine = (mOriginMotionX < rightClamp / 2) ? true
+					: false;
+			int endX = 0;
+			if (isOriginXCrossMiddleLine) {
+				endX = rightClamp;
+			}
+			flingBy(endX - scrollX);
+			mVelocityTracker.clear();
 			break;
+		}
 		}
 
 		return true;
