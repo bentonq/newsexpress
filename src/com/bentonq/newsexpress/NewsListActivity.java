@@ -24,7 +24,7 @@ public class NewsListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_newslist);
 
 		// Enable hierarchy view locally on real device
 		ViewServer.get(this).addWindow(this);
