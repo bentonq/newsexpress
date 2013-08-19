@@ -11,7 +11,8 @@
         android:id="@+id/sliding_menu"
         android:layout_width="264dp"
         android:layout_height="match_parent"
-        android:background="@color/AntiFlashWhite" >
+        android:background="@color/AntiFlashWhite"
+        android:visibility="invisible" >
 
         <RelativeLayout
             android:id="@+id/b_header"
@@ -307,7 +308,7 @@
             android:id="@+id/sliding_float"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/Aqua"
+            android:background="@color/AntiFlashWhite"
             android:orientation="vertical" >
 
             <RelativeLayout

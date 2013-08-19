@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bentonq.newsexpress.SlidingFrameLayout.OnSlidingListener;
+
 public class NewsListActivity extends Activity {
 
 	private static final String TAG = "NewsListActivity";
@@ -89,6 +91,25 @@ public class NewsListActivity extends Activity {
 						return view;
 					}
 				});
+			}
+		});
+
+		final View slidingMenu = findViewById(R.id.sliding_menu);
+		SlidingFrameLayout slidingRoot = (SlidingFrameLayout) findViewById(R.id.sliding_root);
+		slidingRoot.setOnSlidingListener(new OnSlidingListener() {
+
+			@Override
+			public void onOpen() {
+				slidingMenu.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void onClose() {
+				slidingMenu.setVisibility(View.INVISIBLE);
+			}
+
+			@Override
+			public void onTotalOpen() {
 			}
 		});
 	}

@@ -20,6 +20,7 @@ public class SlidingFrameLayout extends FrameLayout {
 	private int mVisibleWidth;
 	private int mSlidingAlignLeftId;
 	private int mSlidingAlignRightId;
+	private int mRightClamp;
 
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
@@ -32,6 +33,17 @@ public class SlidingFrameLayout extends FrameLayout {
 	private int mLastMotionX;
 	private int mLastMotionY;
 	private int mOriginMotionX;
+
+	private OnSlidingListener mListener;
+
+	public interface OnSlidingListener {
+
+		public void onOpen();
+
+		public void onClose();
+
+		public void onTotalOpen();
+	}
 
 	public SlidingFrameLayout(Context context) {
 		this(context, null);
@@ -70,6 +82,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		mVisibleWidth = 0;
 		mSlidingAlignLeftId = 0;
 		mSlidingAlignRightId = 0;
+		mRightClamp = mVisibleWidth - getWidth();
 	}
 
 	@Override
@@ -124,8 +137,8 @@ public class SlidingFrameLayout extends FrameLayout {
 			break;
 		}
 
-//		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
-//				+ event.getX() + ", " + event.getY() + ")");
+		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
+				+ event.getX() + ", " + event.getY() + ")");
 
 		return intercepted;
 	}
@@ -138,11 +151,19 @@ public class SlidingFrameLayout extends FrameLayout {
 		final int action = event.getActionMasked();
 
 		switch (action) {
-		case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_DOWN: {
 			// If is scrolling, stop it
 			if (!mScroller.isFinished()) {
 				mScroller.abortAnimation();
 			}
+
+			// If touching outside of the floating panel, lets the sliding menu
+			// getting the event.
+			final int motionX = (int) event.getX();
+			if (motionX > this.getScrollX()) {
+				return false;
+			}
+		}
 			break;
 		case MotionEvent.ACTION_MOVE: {
 			// Follow finger touches
@@ -167,8 +188,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		case MotionEvent.ACTION_UP: {
 			final int scrollX = getScrollX();
-			final int rightClamp = mVisibleWidth - getWidth();
-			final boolean isScrollXCrossMiddleLine = (scrollX < rightClamp / 2) ? true
+			final boolean isScrollXCrossMiddleLine = (scrollX < mRightClamp / 2) ? true
 					: false;
 			int endX = 0;
 			if (mIsBeingDragged) {
@@ -178,10 +198,10 @@ public class SlidingFrameLayout extends FrameLayout {
 				final int velocity = (int) mVelocityTracker.getXVelocity();
 				if (velocity > mMinimumVelocity
 						|| (Math.abs(velocity) < mMinimumVelocity && isScrollXCrossMiddleLine)) {
-					endX = rightClamp;
+					endX = mRightClamp;
 				}
 			} else if (isScrollXCrossMiddleLine) {
-				endX = rightClamp;
+				endX = mRightClamp;
 			}
 			flingBy(endX - scrollX);
 			recycleVelocityTracker();
@@ -190,12 +210,11 @@ public class SlidingFrameLayout extends FrameLayout {
 		case MotionEvent.ACTION_CANCEL: {
 			// Reset to origin position
 			final int scrollX = getScrollX();
-			final int rightClamp = mVisibleWidth - getWidth();
-			final boolean isOriginXCrossMiddleLine = (mOriginMotionX < rightClamp / 2) ? true
+			final boolean isOriginXCrossMiddleLine = (mOriginMotionX < mRightClamp / 2) ? true
 					: false;
 			int endX = 0;
 			if (isOriginXCrossMiddleLine) {
-				endX = rightClamp;
+				endX = mRightClamp;
 			}
 			flingBy(endX - scrollX);
 			recycleVelocityTracker();
@@ -203,8 +222,8 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		}
 
-//		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
-//				+ ", " + event.getY() + ")");
+		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
+				+ ", " + event.getY() + ")");
 
 		return true;
 	}
@@ -216,7 +235,7 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	@Override
 	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//		Log.d(TAG, "requestDisallowInterceptTouchEvent");
+		// Log.d(TAG, "requestDisallowInterceptTouchEvent");
 		if (disallowIntercept) {
 			recycleVelocityTracker();
 		}
@@ -246,6 +265,24 @@ public class SlidingFrameLayout extends FrameLayout {
 				mVisibleWidth = getWidth() - v.getLeft();
 			}
 		}
+
+		mRightClamp = mVisibleWidth - getWidth();
+	}
+
+	@Override
+	protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+		super.onScrollChanged(l, t, oldl, oldt);
+
+		if (mListener != null) {
+			if (l == 0) {
+				mListener.onClose();
+			} else if (l == mRightClamp) {
+				mListener.onTotalOpen();
+			} else {
+				if (oldl == 0)
+					mListener.onOpen();
+			}
+		}
 	}
 
 	public int getVisibleWidth() {
@@ -254,6 +291,7 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	public void setVisibleWidth(int width) {
 		mVisibleWidth = width;
+		mRightClamp = mVisibleWidth - getWidth();
 	}
 
 	public void setSlidingAlignLeftView(int id) {
@@ -265,8 +303,6 @@ public class SlidingFrameLayout extends FrameLayout {
 	}
 
 	public void slideBy(int x) {
-		final int rightClamp = mVisibleWidth - getWidth();
-
 		int newScrollX = 0;
 		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
 			// Use newest position
@@ -277,14 +313,12 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 
 		// Never scroll outside the bound
-		if (newScrollX < 0 && newScrollX > rightClamp) {
+		if (newScrollX < 0 && newScrollX > mRightClamp) {
 			scrollBy(x, 0);
 		}
 	}
 
 	public void flingBy(int x) {
-		final int rightClamp = mVisibleWidth - getWidth();
-
 		int startX = 0;
 		int startY = 0;
 		int dx = 0;
@@ -302,8 +336,8 @@ public class SlidingFrameLayout extends FrameLayout {
 
 		// Never scroll outside the bound
 		int endX = startX + dx;
-		if (endX < rightClamp) {
-			dx = rightClamp - startX;
+		if (endX < mRightClamp) {
+			dx = mRightClamp - startX;
 		} else if (endX > 0) {
 			dx = -startX;
 		}
@@ -312,6 +346,10 @@ public class SlidingFrameLayout extends FrameLayout {
 			mScroller.startScroll(startX, startY, dx, 0, 500 /* MS */);
 			invalidate();
 		}
+	}
+
+	public void setOnSlidingListener(OnSlidingListener listener) {
+		mListener = listener;
 	}
 
 	private boolean isStartDragging(int motionX, int motionY) {
