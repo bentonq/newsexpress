@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SlidingFrameLayout">
+        <attr name="visibleWidth" format="dimension" />
+        <attr name="slidingAlignLeft" format="reference" />
+        <attr name="slidingAlignRight" format="reference" />
+    </declare-styleable>
+
+</resources>

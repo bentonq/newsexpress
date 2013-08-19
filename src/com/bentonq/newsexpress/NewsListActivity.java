@@ -92,7 +92,7 @@ public class NewsListActivity extends Activity {
 		});
 		
 		SlidingFrameLayout slidingPanel = (SlidingFrameLayout) findViewById(R.id.sliding_panel);
-		slidingPanel.setSlidingPadding(240 /* PIX */);
+		slidingPanel.setVisibleWidth(240 /* PIX */);
 	}
 
 	@Override

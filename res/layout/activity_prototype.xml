@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/AntiFlashWhite"
-    android:orientation="vertical" >
+    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.bentonq.newsexpress">
 
     <RelativeLayout
         android:id="@+id/b_sites"
@@ -299,13 +299,14 @@
     <com.bentonq.newsexpress.SlidingFrameLayout
         android:id="@+id/sfl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        app:slidingAlignRight="@id/b_sites" >
 
         <RelativeLayout
             android:id="@+id/root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/AntiFlashWhite"
+            android:background="@color/Aqua"
             android:orientation="vertical" >
 
             <RelativeLayout

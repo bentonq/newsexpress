@@ -1,21 +1,25 @@
 package com.bentonq.newsexpress;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
-// TODO Adjust animation
+// TODO Adjust animation, add sliding menu as child
 public class SlidingFrameLayout extends FrameLayout {
 
 	private static final String TAG = "SlidingFrameLayout";
 
-	private int mSlidingPadding;
+	private int mVisibleWidth;
+	private int mSlidingAlignLeftId;
+	private int mSlidingAlignRightId;
 
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
@@ -30,18 +34,28 @@ public class SlidingFrameLayout extends FrameLayout {
 	private int mOriginMotionX;
 
 	public SlidingFrameLayout(Context context) {
-		super(context);
-		initSlidingFrameLayout();
+		this(context, null);
 	}
 
 	public SlidingFrameLayout(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initSlidingFrameLayout();
+		this(context, attrs, 0);
 	}
 
 	public SlidingFrameLayout(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initSlidingFrameLayout();
+
+		TypedArray a = context.obtainStyledAttributes(attrs,
+				R.styleable.SlidingFrameLayout, defStyle, 0);
+
+		setVisibleWidth(a
+				.getInt(R.styleable.SlidingFrameLayout_visibleWidth, 0));
+		setSlidingAlignLeftView(a.getResourceId(
+				R.styleable.SlidingFrameLayout_slidingAlignLeft, 0));
+		setSlidingAlignRightView(a.getResourceId(
+				R.styleable.SlidingFrameLayout_slidingAlignRight, 0));
+
+		a.recycle();
 	}
 
 	private void initSlidingFrameLayout() {
@@ -53,7 +67,9 @@ public class SlidingFrameLayout extends FrameLayout {
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
 
-		mSlidingPadding = 0;
+		mVisibleWidth = 0;
+		mSlidingAlignLeftId = 0;
+		mSlidingAlignRightId = 0;
 	}
 
 	@Override
@@ -151,7 +167,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		case MotionEvent.ACTION_UP: {
 			final int scrollX = getScrollX();
-			final int rightClamp = mSlidingPadding - getWidth();
+			final int rightClamp = mVisibleWidth - getWidth();
 			final boolean isScrollXCrossMiddleLine = (scrollX < rightClamp / 2) ? true
 					: false;
 			int endX = 0;
@@ -174,7 +190,7 @@ public class SlidingFrameLayout extends FrameLayout {
 		case MotionEvent.ACTION_CANCEL: {
 			// Reset to origin position
 			final int scrollX = getScrollX();
-			final int rightClamp = mSlidingPadding - getWidth();
+			final int rightClamp = mVisibleWidth - getWidth();
 			final boolean isOriginXCrossMiddleLine = (mOriginMotionX < rightClamp / 2) ? true
 					: false;
 			int endX = 0;
@@ -206,16 +222,52 @@ public class SlidingFrameLayout extends FrameLayout {
 		super.requestDisallowInterceptTouchEvent(disallowIntercept);
 	}
 
-	public int getSlidingPadding() {
-		return mSlidingPadding;
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		View parent = (View) getParent();
+		if (parent == null) {
+			return;
+		}
+
+		boolean alignRight = false;
+		View v = parent.findViewById(mSlidingAlignLeftId);
+		if (v == null) {
+			v = parent.findViewById(mSlidingAlignRightId);
+			alignRight = true;
+		}
+
+		Log.d(TAG, "width = " + getWidth());
+		if (v != null) {
+			if (alignRight) {
+				Log.d(TAG, "right = " + v.getRight());
+				mVisibleWidth = getWidth() - v.getRight();
+			} else {
+				Log.d(TAG, "left = " + v.getLeft());
+				mVisibleWidth = getWidth() - v.getLeft();
+			}
+		}
 	}
 
-	public void setSlidingPadding(int slidingPadding) {
-		mSlidingPadding = slidingPadding;
+	public int getVisibleWidth() {
+		return mVisibleWidth;
+	}
+
+	public void setVisibleWidth(int width) {
+		mVisibleWidth = width;
+	}
+
+	public void setSlidingAlignLeftView(int id) {
+		mSlidingAlignLeftId = id;
+	}
+
+	public void setSlidingAlignRightView(int id) {
+		mSlidingAlignRightId = id;
 	}
 
 	public void slideBy(int x) {
-		final int rightClamp = mSlidingPadding - getWidth();
+		final int rightClamp = mVisibleWidth - getWidth();
 
 		int newScrollX = 0;
 		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
@@ -233,7 +285,7 @@ public class SlidingFrameLayout extends FrameLayout {
 	}
 
 	public void flingBy(int x) {
-		final int rightClamp = mSlidingPadding - getWidth();
+		final int rightClamp = mVisibleWidth - getWidth();
 
 		int startX = 0;
 		int startY = 0;

@@ -12,9 +12,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_prototype);
 
 		ViewServer.get(this).addWindow(this);
-
-		SlidingFrameLayout sfl = (SlidingFrameLayout) findViewById(R.id.sfl);
-		sfl.setSlidingPadding(144);
 	}
 
 	@Override
