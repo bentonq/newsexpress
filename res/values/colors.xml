@@ -2,6 +2,7 @@
 <resources>
     <color name="AirForceBlue">#5D8AA8</color>
     <color name="AntiFlashWhite">#F2F3F4</color>
-    <color name="Almond">#EFDECD</color>
+    <color name="Almond">#F5F5DC</color>
     <color name="Aqua">#00FFFF</color>
+    <color name="GhostWhite">#F8F8FF</color>
 </resources>
