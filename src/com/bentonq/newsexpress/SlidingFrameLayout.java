@@ -124,8 +124,8 @@ public class SlidingFrameLayout extends FrameLayout {
 			break;
 		}
 
-		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
-				+ event.getX() + ", " + event.getY() + ")");
+//		Log.v(TAG, "onInterceptTouchEvent: " + event.getAction() + ", ("
+//				+ event.getX() + ", " + event.getY() + ")");
 
 		return intercepted;
 	}
@@ -203,8 +203,8 @@ public class SlidingFrameLayout extends FrameLayout {
 		}
 		}
 
-		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
-				+ ", " + event.getY() + ")");
+//		Log.v(TAG, "onTouchEvent: " + event.getAction() + ", (" + event.getX()
+//				+ ", " + event.getY() + ")");
 
 		return true;
 	}
@@ -216,6 +216,7 @@ public class SlidingFrameLayout extends FrameLayout {
 
 	@Override
 	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+//		Log.d(TAG, "requestDisallowInterceptTouchEvent");
 		if (disallowIntercept) {
 			recycleVelocityTracker();
 		}
@@ -238,13 +239,10 @@ public class SlidingFrameLayout extends FrameLayout {
 			alignRight = true;
 		}
 
-		Log.d(TAG, "width = " + getWidth());
 		if (v != null) {
 			if (alignRight) {
-				Log.d(TAG, "right = " + v.getRight());
 				mVisibleWidth = getWidth() - v.getRight();
 			} else {
-				Log.d(TAG, "left = " + v.getLeft());
 				mVisibleWidth = getWidth() - v.getLeft();
 			}
 		}

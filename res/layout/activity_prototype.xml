@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/b_root"
+    xmlns:app="http://schemas.android.com/apk/res/com.bentonq.newsexpress"
+    android:id="@+id/content_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/AntiFlashWhite"
-    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.bentonq.newsexpress">
+    android:orientation="vertical" >
 
     <RelativeLayout
-        android:id="@+id/b_sites"
+        android:id="@+id/sliding_menu"
         android:layout_width="264dp"
         android:layout_height="match_parent"
         android:background="@color/AntiFlashWhite" >
@@ -297,20 +298,20 @@
     </RelativeLayout>
 
     <com.bentonq.newsexpress.SlidingFrameLayout
-        android:id="@+id/sfl"
+        android:id="@+id/sliding_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:slidingAlignRight="@id/b_sites" >
+        app:slidingAlignRight="@id/sliding_menu" >
 
         <RelativeLayout
-            android:id="@+id/root"
+            android:id="@+id/sliding_float"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/Aqua"
             android:orientation="vertical" >
 
             <RelativeLayout
-                android:id="@+id/header"
+                android:id="@+id/newslist_header"
                 android:layout_width="match_parent"
                 android:layout_height="96dp"
                 android:layout_alignParentTop="true"
@@ -350,7 +351,7 @@
             </RelativeLayout>
 
             <FrameLayout
-                android:id="@+id/footer"
+                android:id="@+id/newslist_footer"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_alignParentBottom="true"
@@ -358,11 +359,11 @@
             </FrameLayout>
 
             <ScrollView
-                android:id="@+id/scrollView1"
+                android:id="@+id/newslist_body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/footer"
-                android:layout_below="@id/header" >
+                android:layout_above="@id/newslist_footer"
+                android:layout_below="@id/newslist_header" >
 
                 <LinearLayout
                     android:id="@+id/body"
@@ -373,12 +374,12 @@
                     android:paddingRight="18dp" >
 
                     <RelativeLayout
-                        android:id="@+id/RelativeLayout10"
+                        android:id="@+id/newstitle_root"
                         android:layout_width="match_parent"
                         android:layout_height="95dp" >
 
                         <ImageView
-                            android:id="@+id/ImageView21"
+                            android:id="@+id/newstitle_image"
                             android:layout_width="100dp"
                             android:layout_height="67dp"
                             android:layout_alignParentRight="true"
@@ -386,28 +387,28 @@
                             android:src="@android:color/darker_gray" />
 
                         <TextView
-                            android:id="@+id/TextView19"
+                            android:id="@+id/newstitle_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
-                            android:layout_alignTop="@+id/ImageView21"
+                            android:layout_alignTop="@+id/newstitle_image"
                             android:layout_marginRight="14dp"
-                            android:layout_toLeftOf="@+id/ImageView21"
+                            android:layout_toLeftOf="@+id/newstitle_image"
                             android:background="@android:color/darker_gray"
                             android:gravity="right|center_vertical"
                             android:lines="2"
                             android:text="口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口口" />
 
                         <TextView
-                            android:id="@+id/TextView20"
+                            android:id="@+id/newstitle_dates"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignBottom="@+id/ImageView21"
+                            android:layout_alignBottom="@+id/newstitle_image"
                             android:layout_alignParentLeft="true"
-                            android:layout_below="@+id/TextView19"
+                            android:layout_below="@+id/newstitle_title"
                             android:layout_marginRight="14dp"
                             android:layout_marginTop="8dp"
-                            android:layout_toLeftOf="@+id/ImageView21"
+                            android:layout_toLeftOf="@+id/newstitle_image"
                             android:background="@android:color/darker_gray"
                             android:gravity="center"
                             android:lines="1"

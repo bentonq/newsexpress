@@ -1,7 +1,9 @@
 package com.bentonq.newsexpress;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Xml;
 
@@ -31,7 +35,7 @@ public class NewsUpdater {
 		protected List<News> doInBackground(String... urls) {
 			List<News> result = new ArrayList<News>();
 			try {
-				InputStream stream = loadXmlFromNetwork(urls[0]);
+				InputStream stream = downloadFromNetwork(urls[0]);
 				result = parseXml(stream);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -53,14 +57,13 @@ public class NewsUpdater {
 			}
 		}
 
-		private InputStream loadXmlFromNetwork(String urlString)
+		private InputStream downloadFromNetwork(String urlString)
 				throws IOException {
 			URL url = new URL(urlString);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(10000 /* ms */);
 			conn.setConnectTimeout(15000 /* ms */);
 			conn.setRequestMethod("GET");
-			conn.setDoInput(true);
 			conn.connect();
 			return conn.getInputStream();
 		}
@@ -120,7 +123,9 @@ public class NewsUpdater {
 					skip(parser);
 				}
 			}
-			return new News(title, summary, link);
+
+			Bitmap bitmap = parseImage(summary);
+			return new News(title, summary, bitmap, link);
 		}
 
 		// Processes title tags in the feed.
@@ -177,6 +182,38 @@ public class NewsUpdater {
 					break;
 				}
 			}
+		}
+
+		private Bitmap parseImage(String summary) throws IOException {
+			String imgUrl = "";
+			XmlPullParser parser = Xml.newPullParser();
+			try {
+				parser.setInput(new StringBufferInputStream(summary), null);
+				while (parser.nextTag() == XmlPullParser.START_TAG) {
+					String name = parser.getName();
+					if (name.equals("img")) {
+						imgUrl = parser.getAttributeValue(0);
+						break;
+					}
+				}
+			} catch (XmlPullParserException e) {
+			}
+
+			Bitmap bitmap = null;
+			if (imgUrl != "") {
+				InputStream inputStream = downloadFromNetwork(imgUrl.trim());
+
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				byte data[] = new byte[1024];
+				int len = 0;
+				while ((len = inputStream.read(data)) != -1) {
+					outputStream.write(data, 0, len);
+				}
+				bitmap = BitmapFactory.decodeByteArray(
+						outputStream.toByteArray(), 0, outputStream.size());
+			}
+
+			return bitmap;
 		}
 	}
 

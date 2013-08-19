@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,12 +25,12 @@ public class NewsListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_newslist);
+		setContentView(R.layout.activity_main2);
 
 		// Enable hierarchy view locally on real device
 		ViewServer.get(this).addWindow(this);
 
-		mNewsListView = (ListView) findViewById(R.id.news_list);
+		mNewsListView = (ListView) findViewById(R.id.newslist_body);
 		mNewsListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -38,7 +39,8 @@ public class NewsListActivity extends Activity {
 							int position, long id) {
 						String link = (String) parent
 								.getItemAtPosition(position);
-						Intent intent = new Intent(NewsListActivity.this, NewsActivity.class);
+						Intent intent = new Intent(NewsListActivity.this,
+								NewsActivity.class);
 						intent.setData(Uri.parse(link));
 						startActivity(intent);
 					}
@@ -74,25 +76,21 @@ public class NewsListActivity extends Activity {
 							ViewGroup parent) {
 						LayoutInflater inflater = LayoutInflater
 								.from(NewsListActivity.this);
-						View view = inflater.inflate(R.layout.view_summary,
-								parent, false);
+						View view = inflater.inflate(
+								R.layout.listitem_newstitle, parent, false);
 
 						TextView textView = (TextView) view
-								.findViewById(R.id.title);
+								.findViewById(R.id.newstitle_title);
 						textView.setText(fnews.get(position).title);
 
-						TextView summaryView = (TextView) view
-								.findViewById(R.id.summary);
-						summaryView.setText(fnews.get(position).summary);
-
+						ImageView imageView = (ImageView) view
+								.findViewById(R.id.newstitle_image);
+						imageView.setImageBitmap(fnews.get(position).image);
 						return view;
 					}
 				});
 			}
 		});
-		
-		SlidingFrameLayout slidingPanel = (SlidingFrameLayout) findViewById(R.id.sliding_panel);
-		slidingPanel.setVisibleWidth(240 /* PIX */);
 	}
 
 	@Override

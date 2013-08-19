@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
+    android:id="@+id/sliding_float"
     android:layout_width="264dp"
     android:layout_height="match_parent"
     android:background="@color/AntiFlashWhite"
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:id="@+id/header"
+        android:id="@+id/newslist_header"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
@@ -16,7 +16,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/footer"
+        android:id="@+id/newslist_footer"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
@@ -24,11 +24,11 @@
     </RelativeLayout>
 
     <ScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/newslist_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/footer"
-        android:layout_below="@id/header" >
+        android:layout_above="@id/newslist_footer"
+        android:layout_below="@id/newslist_header" >
 
         <LinearLayout
             android:layout_width="match_parent"
