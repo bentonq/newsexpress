@@ -5,4 +5,11 @@
     <color name="Almond">#F5F5DC</color>
     <color name="Aqua">#00FFFF</color>
     <color name="GhostWhite">#F8F8FF</color>
+    <color name="Background">#f4f3f1</color>
+    <color name="TitleColor">#3c3936</color>
+    <color name="ListTitleColor">#4f4b47</color>
+    <color name="listTitleColorChecked">#89857d</color>
+    <color name="ShadowColor">#cfcbc4</color>
+    <color name="ShaderColorInverse">#ffffff</color>
+    <color name="InfoColor">#b0a9a4</color>
 </resources>

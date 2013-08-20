@@ -307,49 +307,48 @@
             android:id="@+id/sliding_float"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/GhostWhite"
+            android:background="@drawable/bk_light"
             android:orientation="vertical" >
 
             <RelativeLayout
                 android:id="@+id/newslist_header"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp" >
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:background="@color/Almond"
-                    android:src="@android:drawable/ic_menu_manage" />
-
-                <ImageView
-                    android:id="@+id/ImageView01"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@color/Almond"
-                    android:src="@android:drawable/ic_menu_search" />
-
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/header_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_toLeftOf="@id/ImageView01"
-                    android:layout_toRightOf="@id/imageView2"
-                    android:background="@color/Almond"
+                    android:layout_marginTop="16dp"
                     android:gravity="center"
                     android:lines="1"
                     android:text="36氪"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/TitleColor"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:id="@+id/header_space"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_below="@id/header_title"
+                    android:layout_centerHorizontal="true" >
+
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/header_space"
+                    android:src="@drawable/divider_horizontal_title" />
 
             </RelativeLayout>
 
@@ -358,7 +357,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_alignParentBottom="true"
-                android:background="@android:color/black" >
+                android:background="@drawable/bk_toosl_panel" >
             </FrameLayout>
 
             <ScrollView
@@ -372,60 +371,290 @@
                     android:id="@+id/body"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp" >
+                    android:orientation="vertical" >
 
                     <RelativeLayout
                         android:id="@+id/newstitle_root"
                         android:layout_width="match_parent"
-                        android:layout_height="95dp" >
-
-                        <ImageView
-                            android:id="@+id/newstitle_image"
-                            android:layout_width="100dp"
-                            android:layout_height="62dp"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentTop="true"
-                            android:background="@color/Almond"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/a" />
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp" >
 
                         <TextView
                             android:id="@+id/newstitle_title"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentTop="true"
-                            android:layout_marginRight="14dp"
-                            android:layout_toLeftOf="@+id/newstitle_image"
-                            android:background="@color/Almond"
-                            android:gravity="left|top"
+                            android:layout_marginRight="140dp"
+                            android:layout_marginTop="12dp"
                             android:lines="2"
-                            android:text="职业社交网络LinkedIn继续扩张领土：瞄准高中生和大学生市场"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:text="InformationWeek发布企业云应用调查报告"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/ListTitleColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/newstitle_dates"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignRight="@id/newstitle_title"
+                            android:layout_below="@id/newstitle_title"
+                            android:layout_marginTop="8dp"
+                            android:lines="1"
+                            android:shadowColor="@color/ShaderColorInverse"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
+                            android:text="1分钟前"
+                            android:textColor="@color/InfoColor"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/newstitle_image"
+                            android:layout_width="132dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/newstitle_dates"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignTop="@id/newstitle_title"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/a" />
+
+                        <FrameLayout
+                            android:id="@+id/newstitle_bottom"
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_below="@id/newstitle_dates" >
+
+                        </FrameLayout>
+
+                        <ImageView
+                            android:id="@+id/imageView1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignBottom="@+id/newstitle_image"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginRight="14dp"
-                            android:layout_toLeftOf="@+id/newstitle_image"
-                            android:background="@color/Almond"
-                            android:gravity="left|bottom"
-                            android:lines="1"
-                            android:text="1分钟前"
-                            android:textSize="12sp" />
+                            android:layout_below="@id/newstitle_bottom"
+                            android:src="@drawable/divider_horizontal" />
+
                     </RelativeLayout>
 
-                    <ImageView
-                        android:id="@+id/ImageView18"
+                    <RelativeLayout
+                        android:id="@+id/newstitle_root_longtxt"
                         android:layout_width="match_parent"
-                        android:layout_height="4dp" />
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp" >
+
+                        <TextView
+                            android:id="@+id/TextView03"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginTop="12dp"
+                            android:lines="1"
+                            android:text="解困中国停车难,深圳&quot;停哪儿&quot;从打车模式取"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/ListTitleColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/TextView05"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/TextView03"
+                            android:layout_marginRight="140dp"
+                            android:ellipsize="end"
+                            android:lines="2"
+                            android:text="取经,在停车场保安和私家车主间推加价机制"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/ListTitleColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/TextView04"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignRight="@+id/TextView03"
+                            android:layout_below="@id/TextView05"
+                            android:layout_marginTop="16dp"
+                            android:lines="1"
+                            android:shadowColor="@color/ShaderColorInverse"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
+                            android:text="45分钟前"
+                            android:textColor="@color/InfoColor"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/ImageView04"
+                            android:layout_width="132dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/TextView04"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignTop="@id/TextView05"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/c" />
+
+                        <FrameLayout
+                            android:id="@+id/FrameLayout02"
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_below="@+id/TextView04" >
+                        </FrameLayout>
+
+                        <ImageView
+                            android:id="@+id/ImageView03"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/FrameLayout02"
+                            android:src="@drawable/divider_horizontal" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/newstitle_root_largeimage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <ImageView
+                            android:id="@+id/ImageView02"
+                            android:layout_width="match_parent"
+                            android:layout_height="150dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginLeft="1dp"
+                            android:layout_marginRight="1dp"
+                            android:layout_marginTop="12dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/b" />
+
+                        <TextView
+                            android:id="@+id/TextView02"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/ImageView02"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="8dp"
+                            android:lines="1"
+                            android:shadowColor="@color/ShaderColorInverse"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
+                            android:text="1小时前"
+                            android:textColor="@color/InfoColor"
+                            android:textSize="12sp" />
+
+                        <FrameLayout
+                            android:id="@+id/FrameLayout01"
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_below="@id/TextView02" >
+                        </FrameLayout>
+
+                        <ImageView
+                            android:id="@+id/ImageView01"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/FrameLayout01"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:src="@drawable/divider_horizontal" />
+
+                        <TextView
+                            android:id="@+id/TextView01"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="20dp"
+                            android:lines="2"
+                            android:text="特斯拉Model S碰撞测试获超五星评价"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/ListTitleColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/newstitle_root_checked"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp" >
+
+                        <TextView
+                            android:id="@+id/TextView06"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginRight="140dp"
+                            android:layout_marginTop="12dp"
+                            android:lines="2"
+                            android:shadowColor="@android:color/white"
+                            android:shadowDx="1"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
+                            android:text="InformationWeek发布企业云应用调查报告"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/listTitleColorChecked"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/TextView07"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignRight="@+id/TextView06"
+                            android:layout_below="@+id/TextView06"
+                            android:layout_marginTop="8dp"
+                            android:lines="1"
+                            android:shadowColor="@color/ShaderColorInverse"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
+                            android:text="1分钟前"
+                            android:textColor="@color/InfoColor"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/ImageView06"
+                            android:layout_width="132dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/TextView07"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignTop="@+id/TextView06"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/a" />
+
+                        <FrameLayout
+                            android:id="@+id/FrameLayout03"
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_below="@+id/TextView07" >
+                        </FrameLayout>
+
+                        <ImageView
+                            android:id="@+id/ImageView05"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/FrameLayout03"
+                            android:src="@drawable/divider_horizontal" />
+                    </RelativeLayout>
 
                 </LinearLayout>
+
             </ScrollView>
         </RelativeLayout>
     </com.bentonq.newsexpress.SlidingFrameLayout>
