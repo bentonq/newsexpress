@@ -3,19 +3,14 @@ package com.bentonq.newsexpress;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.bentonq.newsexpress.SlidingFrameLayout.OnSlidingListener;
 
 public class NewsListActivity extends Activity {
 
@@ -24,29 +19,51 @@ public class NewsListActivity extends Activity {
 	private NewsUpdater mNewsUpdater;
 	private ListView mNewsListView;
 
+	private static final int[] NEWSITEM_TYPE = {
+			R.layout.listadapter_newsitem_normal,
+			R.layout.listadapter_newsitem_shorttitle,
+			R.layout.listadapter_newsitem_largeimage,
+			R.layout.listadapter_newsitem_noimage };
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main2);
+		setContentView(R.layout.activity_newslist);
 
 		// Enable hierarchy view locally on real device
 		ViewServer.get(this).addWindow(this);
 
-		mNewsListView = (ListView) findViewById(R.id.newslist_body);
-		mNewsListView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		mNewsListView = (ListView) findViewById(R.id.newslist_listview);
+		mNewsListView.setAdapter(new BaseAdapter() {
 
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						String link = (String) parent
-								.getItemAtPosition(position);
-						Intent intent = new Intent(NewsListActivity.this,
-								NewsActivity.class);
-						intent.setData(Uri.parse(link));
-						startActivity(intent);
-					}
-				});
+			@Override
+			public int getCount() {
+				// TODO Auto-generated method stub
+				return 10;
+			}
+
+			@Override
+			public Object getItem(int arg0) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public long getItemId(int arg0) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				LayoutInflater inflater = LayoutInflater
+						.from(NewsListActivity.this);
+				View view = inflater.inflate(NEWSITEM_TYPE[position % 4],
+						parent, false);
+				return view;
+			}
+
+		});
 
 		String url = new String("http://www.36kr.com/feed");
 		mNewsUpdater = new NewsUpdater();
@@ -78,38 +95,32 @@ public class NewsListActivity extends Activity {
 							ViewGroup parent) {
 						LayoutInflater inflater = LayoutInflater
 								.from(NewsListActivity.this);
-						View view = inflater.inflate(
-								R.layout.listitem_newstitle, parent, false);
+
+						int type = position % 3;
+						if (fnews.get(position).image == null) {
+							type = 3; // no image
+						}
+						View view = inflater.inflate(NEWSITEM_TYPE[type],
+								parent, false);
 
 						TextView textView = (TextView) view
-								.findViewById(R.id.newstitle_title);
+								.findViewById(R.id.newsitem_title);
 						textView.setText(fnews.get(position).title);
 
-						ImageView imageView = (ImageView) view
-								.findViewById(R.id.newstitle_image);
-						imageView.setImageBitmap(fnews.get(position).image);
+						if (type != 2) { // large image
+							TextView summaryText = (TextView) view
+									.findViewById(R.id.newsitem_summary);
+							summaryText.setText(fnews.get(position).summary);
+						}
+
+						if (type != 3) { // no image
+							ImageView imageView = (ImageView) view
+									.findViewById(R.id.newsitem_image);
+							imageView.setImageBitmap(fnews.get(position).image);
+						}
 						return view;
 					}
 				});
-			}
-		});
-
-		final View slidingMenu = findViewById(R.id.sliding_menu);
-		SlidingFrameLayout slidingRoot = (SlidingFrameLayout) findViewById(R.id.sliding_root);
-		slidingRoot.setOnSlidingListener(new OnSlidingListener() {
-
-			@Override
-			public void onOpen() {
-				slidingMenu.setVisibility(View.VISIBLE);
-			}
-
-			@Override
-			public void onClose() {
-				slidingMenu.setVisibility(View.INVISIBLE);
-			}
-
-			@Override
-			public void onTotalOpen() {
 			}
 		});
 	}

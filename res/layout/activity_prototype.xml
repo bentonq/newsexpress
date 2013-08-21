@@ -307,7 +307,7 @@
             android:id="@+id/sliding_float"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bk_light"
+            android:background="@drawable/bk_newslist"
             android:orientation="vertical" >
 
             <RelativeLayout
@@ -320,7 +320,7 @@
                 android:layout_marginRight="16dp" >
 
                 <TextView
-                    android:id="@+id/header_title"
+                    android:id="@+id/header_sitetitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
@@ -338,17 +338,18 @@
                     android:id="@+id/header_space"
                     android:layout_width="match_parent"
                     android:layout_height="16dp"
-                    android:layout_below="@id/header_title"
+                    android:layout_below="@id/header_sitetitle"
                     android:layout_centerHorizontal="true" >
 
                 </FrameLayout>
 
                 <ImageView
                     android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/header_space"
-                    android:src="@drawable/divider_horizontal_title" />
+                    android:scaleType="fitXY"
+                    android:src="@drawable/di_sitetitle" />
 
             </RelativeLayout>
 
@@ -357,7 +358,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/bk_toosl_panel" >
+                android:background="@drawable/bk_toolbar" >
             </FrameLayout>
 
             <ScrollView
@@ -441,10 +442,11 @@
 
                         <ImageView
                             android:id="@+id/ImageView05"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/FrameLayout03"
-                            android:src="@drawable/divider_horizontal" />
+                            android:scaleType="fitXY"
+                            android:src="@drawable/di_newslist" />
 
                     </RelativeLayout>
 
@@ -522,10 +524,11 @@
 
                         <ImageView
                             android:id="@+id/imageView1"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/newstitle_bottom"
-                            android:src="@drawable/divider_horizontal" />
+                            android:scaleType="fitXY"
+                            android:src="@drawable/di_newslist" />
 
                     </RelativeLayout>
 
@@ -585,10 +588,12 @@
 
                         <ImageView
                             android:id="@+id/ImageView01"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/FrameLayout01"
-                            android:src="@drawable/divider_horizontal" />
+                            android:scaleType="fitXY"
+                            android:src="@drawable/di_newslist" />
+
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -665,10 +670,12 @@
 
                         <ImageView
                             android:id="@+id/ImageView03"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/FrameLayout02"
-                            android:src="@drawable/divider_horizontal" />
+                            android:scaleType="fitXY"
+                            android:src="@drawable/di_newslist" />
+
                     </RelativeLayout>
 
                 </LinearLayout>

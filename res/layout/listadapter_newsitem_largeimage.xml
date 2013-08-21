@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/newsitem_largeimage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/newsitem_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="NFC不仅能传图，电也是能传的"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/H1"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/newsitem_image"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_alignLeft="@id/newsitem_title"
+        android:layout_alignRight="@id/newsitem_title"
+        android:layout_below="@id/newsitem_title"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/b" />
+
+    <TextView
+        android:id="@+id/newsitem_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/newsitem_image"
+        android:layout_alignRight="@id/newsitem_image"
+        android:layout_below="@id/newsitem_image"
+        android:layout_marginTop="8dp"
+        android:lines="1"
+        android:shadowColor="@color/ShaderColorInverse"
+        android:shadowDy="2"
+        android:shadowRadius="1"
+        android:text="45分钟前"
+        android:textColor="@color/H4"
+        android:textSize="12sp" />
+
+    <FrameLayout
+        android:id="@+id/newsitem_space"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_below="@id/newsitem_date" >
+    </FrameLayout>
+
+</RelativeLayout>
