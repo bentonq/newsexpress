@@ -6,6 +6,11 @@
     <color name="Aqua">#00FFFF</color>
     <color name="GhostWhite">#F8F8FF</color>
     <color name="Background">#f4f3f1</color>
+    <color name="H0">#3c3936</color>
+    <color name="H1">#55504c</color>
+    <color name="H2">#76706c</color>
+    <color name="H3">#918c89</color>
+    <color name="H4">#b0a9a4</color>
     <color name="TitleColor">#3c3936</color>
     <color name="ListTitleColor">#4f4b47</color>
     <color name="listTitleColorChecked">#89857d</color>
