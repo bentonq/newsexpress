@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from bs4.diagnose import diagnose
 from urllib import urlopen
-from xml.dom.minidom import Document
 import feedparser
 
 class NewsGuid:
@@ -72,31 +70,6 @@ class NewsAgent:
 			result.extend(source.get_news(guids))
 		return result
 
-class TestSearchMethod:
-	def __init__(self):
-		pass
-
-	def search(self, html):
-		key_tag = html.find(id='endText')
-		return key_tag
-
-class TestNormalizeMethod:
-	def __init__(self):
-		pass
-
-	def normalize(self, html):
-		new_xml = BeautifulSoup('<news></news>', 'xml')
-		root = new_xml.news
-		for tag in html.find_all(['p', 'img']):
-			if tag.name == 'img' and not tag.has_attr('class'):
-				root.append(tag)
-			elif tag.string:
-				tag.string = tag.string.strip()
-				root.append(tag)
-
-		print(new_xml)
-		return new_xml
-
 class NewsEngine:
 	def __init__(self):
 		self.search_methods = []
@@ -120,18 +93,6 @@ class NewsEngine:
 			for method in self.normalize_methods:
 				key_tag = method.normalize(key_tag)
 		except:
-			print(news.title)
-			print(news.link)
-
-url = 'http://news.163.com/special/00011K6L/rss_newstop.xml'
-source = FeedSource(url)
-
-agent = NewsAgent()
-agent.add_source(source)
-
-engine = NewsEngine()
-engine.register_search_method(TestSearchMethod())
-engine.register_normalize_method(TestNormalizeMethod())
-for news in agent.get_news():
-	engine.parse(news)
+			print("Error parsing " + news.title + " link: " +
+				   news.link)
 
