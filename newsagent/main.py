@@ -1,15 +1,17 @@
-import newsagent
-import testmethod
+from feedsource import FeedSource
+from newsagent import NewsAgent, NewsEngine
+from testmethod import TestSearchMethod, TestNormalizeMethod
 
 url = 'http://news.163.com/special/00011K6L/rss_newstop.xml'
-source = newsagent.FeedSource(url)
+source = FeedSource(url)
 
-agent = newsagent.NewsAgent()
+agent = NewsAgent()
 agent.add_source(source)
 
-engine = newsagent.NewsEngine()
-engine.register_search_method(testmethod.TestSearchMethod())
-engine.register_normalize_method(testmethod.TestNormalizeMethod())
-for news in agent.get_news():
+engine = NewsEngine()
+engine.register_search_method(TestSearchMethod())
+engine.register_normalize_method(TestNormalizeMethod())
+for news in agent.newest_news():
+	print(news.title)
 	engine.parse(news)
 

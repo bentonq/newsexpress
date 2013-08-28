@@ -21,6 +21,4 @@ class TestNormalizeMethod:
 			elif tag.string:
 				tag.string = tag.string.strip()
 				root.append(tag)
-
-		print(new_xml)
 		return new_xml

@@ -1,11 +1,28 @@
 from bs4 import BeautifulSoup
-from urllib import urlopen
-import feedparser
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+import uuid
 
-class NewsGuid:
-	def __init__(self, id, source):
-		self.id = id
-		self.feed_id = source.get_guid()
+engine = create_engine('sqlite:///newsexpress.db')
+Session = sessionmaker(bind=engine)
+session = Session()
+Base = declarative_base()
+
+class NewsItem(Base):
+	__tablename__ = 'news_item'
+
+	id = Column(Integer, primary_key=True)
+	name = Column(String)
+
+	def __init__(self, name):
+		self.name = name
+	
+	def __repr__(self):
+		return "<NewsItem<'%s'>" % self.name
+
+Base.metadata.create_all(engine)
 
 class News:
 	def __init__(self, title, summary, content, pub_date, link):
@@ -15,46 +32,6 @@ class News:
 		self.pub_date = pub_date
 		self.link = link
 
-class FeedSource:
-	def __init__(self, url):
-		self.url = url
-		self.feed = None
-		self.items = {}
-
-	def get_guid(self):
-		self._fetch_feed()
-		if 'id' in self.feed.feed:
-			return self.feed.feed.id
-		else:
-			return self.feed.feed.title
-
-	def get_news_guids(self):
-		result = []
-		self._fetch_feed()
-		for entry in self.feed.entries:
-			id = None
-			if 'id' in entry:
-				id = entry.id
-			else:
-				id = entry.link
-			self.items[id] = entry
-			result.append(NewsGuid(id, self))
-		return result
-
-	def get_news(self, guids):
-		result = []
-		for guid in guids:
-			news_item = self.items[guid.id]
-			html = urlopen(news_item.link).read()
-			content = BeautifulSoup(html, "html5lib")
-			result.append(News(news_item.title, news_item.summary, content,
-							   news_item.published_parsed, news_item.link))
-		return result
-
-	def _fetch_feed(self):
-		if not self.feed:
-			self.feed = feedparser.parse(self.url)
-
 class NewsAgent:
 	def __init__(self):
 		self.sources = []
@@ -62,12 +39,26 @@ class NewsAgent:
 	def add_source(self, source):
 		self.sources.append(source)
 
-	def get_news(self):
+	def newest_news(self):
 		result = []
 		for source in self.sources:
-			guids = source.get_news_guids()
-			# TODO: filter the guids
-			result.extend(source.get_news(guids))
+			items = source.update_news_items()
+			newest_items = self._check_newest_items(items)
+			news = source.download_news(newest_items)
+			for n in news:
+				soup = BeautifulSoup(n.content, "html5lib")
+				n.content = soup
+				result.append(n)
+		return result
+	
+	def _check_newest_items(self, items):
+		result = []
+		for item in items:
+			exist = session.query(NewsItem).filter(NewsItem.name==item.name).count()
+			if not exist:
+				session.add(item)
+				session.commit()
+				result.append(item)
 		return result
 
 class NewsEngine:
