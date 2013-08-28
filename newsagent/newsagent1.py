@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from bs4.diagnose import diagnose
 from urllib import urlopen
+from xml.dom.minidom import Document
 import feedparser
 
 class NewsGuid:
@@ -9,11 +10,12 @@ class NewsGuid:
 		self.feed_id = source.get_guid()
 
 class News:
-	def __init__(self, title, summary, content, pub_date):
+	def __init__(self, title, summary, content, pub_date, link):
 		self.title = title
 		self.summary = summary
 		self.content = content
 		self.pub_date = pub_date
+		self.link = link
 
 class FeedSource:
 	def __init__(self, url):
@@ -43,12 +45,12 @@ class FeedSource:
 
 	def get_news(self, guids):
 		result = []
-		# FIXME: test here
-		news_item = self.items[guids[0].id]
-		html = urlopen(news_item.link).read()
-		content = BeautifulSoup(html, "html5lib")
-		result.append(News(news_item.title, news_item.summary, content,
-						   news_item.published_parsed))
+		for guid in guids:
+			news_item = self.items[guid.id]
+			html = urlopen(news_item.link).read()
+			content = BeautifulSoup(html, "html5lib")
+			result.append(News(news_item.title, news_item.summary, content,
+							   news_item.published_parsed, news_item.link))
 		return result
 
 	def _fetch_feed(self):
@@ -75,7 +77,7 @@ class TestSearchMethod:
 		pass
 
 	def search(self, html):
-		key_tag = html.find(id='epContentLeft')
+		key_tag = html.find(id='endText')
 		return key_tag
 
 class TestNormalizeMethod:
@@ -83,40 +85,43 @@ class TestNormalizeMethod:
 		pass
 
 	def normalize(self, html):
+		new_xml = BeautifulSoup('<news></news>', 'xml')
+		root = new_xml.news
 		for tag in html.find_all(['p', 'img']):
-			if tag.name == 'img':
-				if tag.has_key('src'):
-					print tag['src']
-			else:
-				if tag.string:
-					print(tag.string)
+			if tag.name == 'img' and not tag.has_attr('class'):
+				root.append(tag)
+			elif tag.string:
+				tag.string = tag.string.strip()
+				root.append(tag)
+
+		print(new_xml)
+		return new_xml
 
 class NewsEngine:
 	def __init__(self):
-		self.search_method = []
-		self.normalize_method = []
+		self.search_methods = []
+		self.normalize_methods = []
 		pass
 
 	def register_search_method(self, method):
-		self.search_method.append(method)
+		self.search_methods.append(method)
 		pass
 
 	def register_normalize_method(self, method):
-		self.normalize_method.append(method)
+		self.normalize_methods.append(method)
 		pass
 
 	def parse(self, news):
-		search_method = self._choose_search_method(news)
-		normalize_method = self._choose_normalize_method(news)
-		key = search_method.search(news.content)
-		normalize_method.normalize(key)
+		key_tag = news.content
+		try:
+			for method in self.search_methods:
+				key_tag = method.search(key_tag)
 
-	def _choose_search_method(self, news):
-		return TestSearchMethod()
-
-	def _choose_normalize_method(self, news):
-		return TestNormalizeMethod()
-
+			for method in self.normalize_methods:
+				key_tag = method.normalize(key_tag)
+		except:
+			print(news.title)
+			print(news.link)
 
 url = 'http://news.163.com/special/00011K6L/rss_newstop.xml'
 source = FeedSource(url)
@@ -125,5 +130,8 @@ agent = NewsAgent()
 agent.add_source(source)
 
 engine = NewsEngine()
+engine.register_search_method(TestSearchMethod())
+engine.register_normalize_method(TestNormalizeMethod())
 for news in agent.get_news():
 	engine.parse(news)
+
