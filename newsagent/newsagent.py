@@ -8,11 +8,15 @@ import uuid
 import new
 import sys
 import datetime
+import codecs
+import os
 
 engine = create_engine('sqlite:///newsexpress.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base()
+
+os.mkdir('news')
 
 class NewsSource(Base):
 	__tablename__ = 'news_source'
@@ -64,15 +68,26 @@ class News(Base):
 
 Base.metadata.create_all(engine)
 
+class NewsContent:
+	def __init__(self, title, summary, html):
+		self.title = title
+		self.summary = summary
+		self.html = html
+
+def create_news_link(link):
+	return NewsLink(link)
+
 def create_news(title, summary, published_time, html):
+	print("create_news %s" % title)
 	result = News()
 	result.published_time = published_time
-	result.content = title
-	print("create_news %s" % title)
+	result.content = NewsContent(title, summary, html)
 	return result
 
 class NewsAgent:
 	def __init__(self):
+		self.search_methods = []
+		self.normalize_methods = []
 		self.news_sources = session.query(NewsSource).all()
 		for source in self.news_sources:
 			print('Load feed source "%s" from db' % source.name)
@@ -95,6 +110,14 @@ class NewsAgent:
 			session.rollback()
 			print('Can not add feed source: "%s" to db for existence' % name)
 
+	def register_search_method(self, method):
+		self.search_methods.append(method)
+		pass
+
+	def register_normalize_method(self, method):
+		self.normalize_methods.append(method)
+		pass
+
 	def crawl(self):
 		result = []
 		for source in self.news_sources:
@@ -111,13 +134,46 @@ class NewsAgent:
 			news_links = self._check_link_existence(source, news_links)
 			for news_link in news_links:
 				news = source_obj.download_news(news_link)
-				news_link.news = news
+				news_link.news = self._parse_news(news)
 				session.commit()
 			#for n in news:
 				#soup = BeautifulSoup(n.content, "html5lib")
 				#n.content = soup
 				#result.append(n)
 		return result
+
+	def _parse_news(self, news):
+		if not news or not isinstance(news.content, NewsContent):
+			return None
+		
+		news_xml = BeautifulSoup('<news></news>', 'xml')	
+		news_tag = news_xml.news
+
+		title_tag = news_xml.new_tag('title')
+		title_tag.string = news.content.title
+		summary_tag = news_xml.new_tag('summary')
+		summary_tag.string = news.content.summary
+
+		content_tag = news_xml.new_tag('content')
+		try:
+			key_tag = BeautifulSoup(news.content.html, 'html5lib')
+			for method in self.search_methods:
+				key_tag = method.search(key_tag)
+			
+			for method in self.normalize_methods:
+				key_tag = method.normalize(key_tag)
+
+			for content in key_tag.contents:
+				content_tag.append(content)
+		except AttributeError:
+			print("Error parsing " + news.content.title)
+
+		news_tag.append(title_tag)
+		news_tag.append(summary_tag)
+		news_tag.append(content_tag)
+
+		f = codecs.open('news/%s.xml' % news.content.title, 'w', 'utf-8')
+		f.write(news_xml.prettify())
 	
 	def _check_link_existence(self, source, news_links):
 		result = []
@@ -132,17 +188,8 @@ class NewsAgent:
 
 class NewsEngine:
 	def __init__(self):
-		self.search_methods = []
-		self.normalize_methods = []
 		pass
 
-	def register_search_method(self, method):
-		self.search_methods.append(method)
-		pass
-
-	def register_normalize_method(self, method):
-		self.normalize_methods.append(method)
-		pass
 
 	def parse(self, news):
 		key_tag = news.content

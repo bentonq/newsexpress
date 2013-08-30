@@ -20,7 +20,7 @@ class FeedSource:
 		result = []
 		feed = feedparser.parse(self.url)
 		for entry in feed.entries:
-			result.append(NewsLink(entry.link))
+			result.append(create_news_link(entry.link))
 			self.news_entry[entry.link] = entry
 		return result
 
