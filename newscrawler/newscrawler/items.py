@@ -6,6 +6,6 @@
 from scrapy.item import Item, Field
 
 class NewsItem(Item):
-	id = Field()
-	header = Field()
-	html = Field()	
+    id = Field()
+    header = Field()
+    doc = Field()

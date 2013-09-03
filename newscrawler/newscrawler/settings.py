@@ -10,7 +10,10 @@ BOT_NAME = 'newscrawler'
 
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
-ITEM_PIPELINES = ['newscrawler.pipelines.NewscrawlerPipeline']
+ITEM_PIPELINES = [
+    'newscrawler.pipelines.NormalizeHeaderPipeline',
+    'newscrawler.pipelines.NewscrawlerPipeline',
+]
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'newscrawler (+http://www.yourdomain.com)'
