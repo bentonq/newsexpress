@@ -13,6 +13,7 @@ NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
     'newscrawler.pipelines.NormalizeHeaderPipeline',
     'newscrawler.pipelines.NewscrawlerPipeline',
+    'newscrawler.pipelines.ExportPipeline',
 ]
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

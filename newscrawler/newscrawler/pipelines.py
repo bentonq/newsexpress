@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 from bs4.element import Comment
 from bs4.element import NavigableString
 
+import codecs
+
 class NewscrawlerPipeline(object):
     def process_item(self, item, spider):
         soup = BeautifulSoup(item['doc'], 'lxml')
@@ -52,8 +54,13 @@ class NormalizeHeaderPipeline(object):
     def process_item(self, item, spider):
         return item
 
-
 class ExportPipeline(object):
-
     def process_item(self, item, spider):
+        file_title = item['id']
+        file_soup = BeautifulSoup('', 'xml')
+        new_tag = file_soup.new_tag(item['doc'])
+        file_soup.append(new_tag)
+        file = codecs.open('%s.xml' % file_title, 'wb', 'utf-8')
+        file.write(file_soup.prettify())
         return item
+
