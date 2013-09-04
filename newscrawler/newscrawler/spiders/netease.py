@@ -8,9 +8,7 @@ from uuid import uuid3, NAMESPACE_URL
 class NeteaseSpider(BaseSpider):
     name = 'netease'
     allowed_domains = ['news.163.com']
-    start_urls = ['http://news.163.com/13/0902/02/97O2909Q00014AED.html',
-                  'http://news.163.com/13/0903/09/97RCQTUG00014JB5.html',
-                  'http://news.163.com/13/0903/11/97RHS2NS0001121M.html']
+    start_urls = ['http://news.163.com/13/0904/15/97UH2NVF0001124J.html']
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -20,7 +18,7 @@ class NeteaseSpider(BaseSpider):
 
         item = NewsItem()
         item['id'] = uuid3(NAMESPACE_URL, response.url).hex
-        item['header'] = response.headers.to_string()
+        item['header'] = response.headers
         item['doc'] = string_joiner.join(content_list)
 
         return item

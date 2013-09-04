@@ -11,8 +11,9 @@ BOT_NAME = 'newscrawler'
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
+    'newscrawler.pipelines.ConvertToBeautifulSoupPipeline',
     'newscrawler.pipelines.NormalizeHeaderPipeline',
-    'newscrawler.pipelines.NewscrawlerPipeline',
+    'newscrawler.pipelines.CleanHtmlPipeline',
     'newscrawler.pipelines.ExportPipeline',
 ]
 
