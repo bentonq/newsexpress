@@ -5,7 +5,7 @@ from newscrawler.items import NewsItem
 
 from uuid import uuid3, NAMESPACE_URL
 
-class NeteaseSpider(BaseSpider):
+class Kr36Spider(BaseSpider):
     name = 'kr36'
     allowed_domains = ['www.36kr.com']
     start_urls = ['http://www.36kr.com/p/205962.html']
