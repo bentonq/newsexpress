@@ -11,6 +11,7 @@ class Kr36Spider(BaseSpider):
     start_urls = ['http://www.36kr.com/p/205962.html']
 
     def parse(self, response):
+        self.log(response.headers)
         hxs = HtmlXPathSelector(response)
         content_list = hxs.select("//h1[@class='entry-title sep10']").extract()
         content_list.extend(hxs.select("//div[@class='mainContent sep-10']/p").extract())

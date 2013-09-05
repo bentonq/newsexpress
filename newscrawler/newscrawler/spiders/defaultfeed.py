@@ -1,14 +1,16 @@
+from scrapy.spider import BaseSpider
 from scrapy.http import Request
-from scrapy.contrib.spiders import XMLFeedSpider
+import feedparser
 
-class DefaultFeedSpider(XMLFeedSpider):
+class DefaultFeedSpider(BaseSpider):
     name = 'defaultfeed'
-    start_urls = ['http://www.36kr.com/feed']
-    itertag = 'item'
+    start_urls = [
+        'http://www.36kr.com/feed',
+        'http://news.163.com/special/00011K6L/rss_newstop.xml',
+    ]
 
-    def parse_node(self, response, node):
-        link_value = node.select('link').extract()
-        print('----------------------------------------------')
-        url = str(list(link_value[0])[17:-8])
-        print(url)
-        return Request(url)
+    def parse(self, response):
+        feed = feedparser.parse(response.body)
+        for entry in feed.entries:
+            yield Request(entry.link)
+
