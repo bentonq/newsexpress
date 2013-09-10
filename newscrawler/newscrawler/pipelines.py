@@ -1,3 +1,4 @@
+from scrapy.exceptions import DropItem
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 from bs4.element import NavigableString
@@ -21,10 +22,12 @@ class ConvertToBeautifulSoupPipeline(object):
         dst_doc_soup = BeautifulSoup('<doc></doc>', 'xml')
         doc_tag = dst_doc_soup.doc
         src_doc_soup = BeautifulSoup(item['doc'], 'lxml')
-        for tag in src_doc_soup.html.body:
-            doc_tag.append(copy.deepcopy(tag))
-        item['doc'] = dst_doc_soup
-
+        if src_doc_soup.html:
+            for tag in src_doc_soup.html.body:
+                doc_tag.append(copy.deepcopy(tag))
+            item['doc'] = dst_doc_soup
+        else:
+            raise DropItem('html is empty')
 
         return item
 

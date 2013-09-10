@@ -1,16 +1,20 @@
 from scrapy.selector import HtmlXPathSelector
-from scrapy.spider import BaseSpider
-
-from newscrawler.items import NewsItem
+from scrapy.http import Request
 
 from uuid import uuid3, NAMESPACE_URL
 
-class NeteaseSpider(BaseSpider):
-    name = 'netease'
-    allowed_domains = ['news.163.com']
-    start_urls = ['http://news.163.com/13/0904/15/97UH2NVF0001124J.html']
+import feedparser
 
-    def parse(self, response):
+from newscrawler.spiders.BaseFeedSpider import BaseFeedSpider
+from newscrawler.items import NewsItem
+
+
+class FeedNews163Spider(BaseFeedSpider):
+    name = 'feed_news_163'
+    allowed_domains = ['news.163.com', 'rss.feedsportal.com']
+    start_urls = ['http://news.163.com/special/00011K6L/rss_newstop.xml']
+
+    def parse_feed(self, response):
         hxs = HtmlXPathSelector(response)
         content_list = hxs.select("//h1[@id='h1title']").extract()
         content_list.extend(hxs.select("//div[@id='endText']/p").extract())
