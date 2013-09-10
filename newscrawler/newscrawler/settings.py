@@ -17,5 +17,11 @@ ITEM_PIPELINES = [
     'newscrawler.pipelines.ExportPipeline',
 ]
 
+EXTENSIONS = {
+    'newscrawler.pipelines.PipelinesSettings': 500,
+}
+
+DOCUMENTS_DIR = 'newscrawler/docs'
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'newscrawler (+http://www.yourdomain.com)'

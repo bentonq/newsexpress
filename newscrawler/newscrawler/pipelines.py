@@ -5,8 +5,30 @@ from bs4.element import NavigableString
 
 import codecs
 import copy
+import os
+
+
+class PipelinesSettings(object):
+
+    _documents_dir = './'
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        if settings['DOCUMENTS_DIR']:
+            cls._documents_dir = settings['DOCUMENTS_DIR']
+            try:
+                os.makedirs(cls._documents_dir)
+            except OSError:
+                pass
+
+    @classmethod
+    def documents_dir(cls):
+        return cls._documents_dir
+
 
 class ConvertToBeautifulSoupPipeline(object):
+
     def process_item(self, item, spider):
         dst_header_soup = BeautifulSoup('<header></header>', 'xml')
         header_tag = dst_header_soup.header
@@ -31,11 +53,15 @@ class ConvertToBeautifulSoupPipeline(object):
 
         return item
 
+
 class NormalizeHeaderPipeline(object):
+
     def process_item(self, item, spider):
         return item
 
+
 class CleanHtmlPipeline(object):
+
     def process_item(self, item, spider):
         doc_soup = item['doc']
         doc_tag = doc_soup.doc
@@ -77,7 +103,9 @@ class CleanHtmlPipeline(object):
 
         return item
 
+
 class ExportPipeline(object):
+
     def process_item(self, item, spider):
         file_soup = BeautifulSoup('<news></news>', 'xml')
         news_tag = file_soup.news
@@ -95,7 +123,7 @@ class ExportPipeline(object):
         news_tag.append(doc_tag)
 
         file_title = item['id']
-        file = codecs.open('%s.xml' % file_title, 'wb', 'utf-8')
+        file = codecs.open('%s/%s.xml' % (PipelinesSettings.documents_dir(), file_title), 'wb', 'utf-8')
         file.write(file_soup.prettify())
 
         return item
