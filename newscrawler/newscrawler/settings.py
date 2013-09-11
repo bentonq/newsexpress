@@ -20,7 +20,7 @@ ITEM_PIPELINES = [
 EXTENSIONS = {
     'newscrawler.acquisition.AcquisitionSettings': 500,
 }
-
+FEED_FORMAT = 'xml'
 DOCUMENTS_DIR = 'data/docs'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
