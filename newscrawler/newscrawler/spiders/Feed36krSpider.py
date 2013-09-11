@@ -24,6 +24,7 @@ class Feed36krSpider(BaseFeedSpider):
         item = NewsItem()
         item['id'] = uuid3(NAMESPACE_URL, response.url).hex
         item['header'] = response.headers
+        item['title'] = response.meta['news_title']
         item['doc'] = string_joiner.join(content_list)
 
         return item

@@ -10,4 +10,10 @@ class NewsItem(Item):
 
     id = Field()
     header = Field()
+    title = Field()
     doc = Field()
+
+
+class LogItem(Item):
+
+    title = Field()

@@ -7,7 +7,7 @@
 #
 
 BOT_NAME = 'newscrawler'
-
+LOG_LEVEL = 'INFO'
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
@@ -15,6 +15,7 @@ ITEM_PIPELINES = [
     'newscrawler.acquisition.ConvertToBeautifulSoup',
     'newscrawler.acquisition.Denoising',
     'newscrawler.acquisition.SaveDocument',
+    'newscrawler.atlast.LogItemExport',
 ]
 EXTENSIONS = {
     'newscrawler.acquisition.AcquisitionSettings': 500,
