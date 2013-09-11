@@ -11,17 +11,16 @@ BOT_NAME = 'newscrawler'
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
-    'newscrawler.pipelines.ConvertToBeautifulSoupPipeline',
-    'newscrawler.pipelines.NormalizeHeaderPipeline',
-    'newscrawler.pipelines.CleanHtmlPipeline',
-    'newscrawler.pipelines.ExportPipeline',
+    'newscrawler.acquisition.CheckDuplicates',
+    'newscrawler.acquisition.ConvertToBeautifulSoup',
+    'newscrawler.acquisition.Denoising',
+    'newscrawler.acquisition.SaveDocument',
 ]
-
 EXTENSIONS = {
-    'newscrawler.pipelines.PipelinesSettings': 500,
+    'newscrawler.acquisition.AcquisitionSettings': 500,
 }
 
-DOCUMENTS_DIR = 'newscrawler/docs'
+DOCUMENTS_DIR = 'data/docs'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'newscrawler (+http://www.yourdomain.com)'

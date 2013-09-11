@@ -8,7 +8,7 @@ import copy
 import os
 
 
-class PipelinesSettings(object):
+class AcquisitionSettings(object):
 
     _documents_dir = './'
 
@@ -27,7 +27,13 @@ class PipelinesSettings(object):
         return cls._documents_dir
 
 
-class ConvertToBeautifulSoupPipeline(object):
+class CheckDuplicates(object):
+
+    def process_item(self, item, spider):
+        return item
+
+
+class ConvertToBeautifulSoup(object):
 
     def process_item(self, item, spider):
         dst_header_soup = BeautifulSoup('<header></header>', 'xml')
@@ -54,13 +60,7 @@ class ConvertToBeautifulSoupPipeline(object):
         return item
 
 
-class NormalizeHeaderPipeline(object):
-
-    def process_item(self, item, spider):
-        return item
-
-
-class CleanHtmlPipeline(object):
+class Denoising(object):
 
     def process_item(self, item, spider):
         doc_soup = item['doc']
@@ -104,7 +104,7 @@ class CleanHtmlPipeline(object):
         return item
 
 
-class ExportPipeline(object):
+class SaveDocument(object):
 
     def process_item(self, item, spider):
         file_soup = BeautifulSoup('<news></news>', 'xml')
@@ -123,8 +123,9 @@ class ExportPipeline(object):
         news_tag.append(doc_tag)
 
         file_title = item['id']
-        file = codecs.open('%s/%s.xml' % (PipelinesSettings.documents_dir(), file_title), 'wb', 'utf-8')
+        file = codecs.open('%s/%s.xml' % (AcquisitionSettings.documents_dir(), file_title), 'wb', 'utf-8')
         file.write(file_soup.prettify())
 
         return item
+
 

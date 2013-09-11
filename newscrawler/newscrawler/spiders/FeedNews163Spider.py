@@ -10,6 +10,7 @@ from newscrawler.items import NewsItem
 
 
 class FeedNews163Spider(BaseFeedSpider):
+
     name = 'feed_news_163'
     allowed_domains = ['news.163.com', 'rss.feedsportal.com']
     start_urls = ['http://news.163.com/special/00011K6L/rss_newstop.xml']

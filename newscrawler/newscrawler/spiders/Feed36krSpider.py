@@ -10,6 +10,7 @@ from newscrawler.items import NewsItem
 
 
 class Feed36krSpider(BaseFeedSpider):
+
     name = 'feed_36kr'
     allowed_domains = ['www.36kr.com']
     start_urls = ['http://www.36kr.com/feed']
