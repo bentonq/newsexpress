@@ -6,6 +6,18 @@
 from scrapy.item import Item, Field
 
 
+class RawItem(Item):
+
+    url = Field()
+    header = Field()
+    body = Field()
+    title = Field()
+    author = Field()
+    summary = Field()
+    published = Field()
+    updated = Field()
+
+
 class NewsItem(Item):
 
     id = Field()

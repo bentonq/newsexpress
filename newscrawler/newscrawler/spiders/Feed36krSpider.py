@@ -6,7 +6,7 @@ from uuid import uuid3, NAMESPACE_URL
 import feedparser
 
 from newscrawler.spiders.BaseFeedSpider import BaseFeedSpider
-from newscrawler.items import NewsItem
+from newscrawler.items import RawItem
 
 
 class Feed36krSpider(BaseFeedSpider):
@@ -21,10 +21,11 @@ class Feed36krSpider(BaseFeedSpider):
         content_list.extend(hxs.select("//div[@class='mainContent sep-10']/p").extract())
         string_joiner = ''
 
-        item = NewsItem()
-        item['id'] = uuid3(NAMESPACE_URL, response.url).hex
-        item['header'] = response.headers
-        item['title'] = response.meta['news_title']
-        item['doc'] = string_joiner.join(content_list)
+        print(response.url)
+        #item['id'] = uuid3(NAMESPACE_URL, response.url).hex
+        #item['header'] = response.headers
+        #item['title'] = response.meta['news_title']
+        #item['doc'] = string_joiner.join(content_list)
 
+        item = RawItem()
         return item

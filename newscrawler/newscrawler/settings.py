@@ -11,17 +11,18 @@ LOG_LEVEL = 'INFO'
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
-    'newscrawler.acquisition.CheckDuplicates',
-    'newscrawler.acquisition.ConvertToBeautifulSoup',
-    'newscrawler.acquisition.Denoising',
-    'newscrawler.acquisition.SaveDocument',
-    'newscrawler.atlast.LogItemExport',
 ]
 EXTENSIONS = {
-    'newscrawler.acquisition.AcquisitionSettings': 500,
 }
 FEED_FORMAT = 'xml'
-DOCUMENTS_DIR = 'data/docs'
+#USER_AGENT = 'newscrawler (+http://www.newscrawler.com)'
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'newscrawler (+http://www.yourdomain.com)'
+
+DOCUMENTS_DIR = 'data'
+
+import os
+try:
+    os.makedirs(DOCUMENTS_DIR)
+except OSError:
+    pass
+
