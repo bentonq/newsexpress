@@ -6,16 +6,16 @@
 from scrapy.item import Item, Field
 
 
-class RawItem(Item):
+class ResponseItem(Item):
 
-    url = Field()
-    header = Field()
-    body = Field()
+    docid = Field()
+    response = Field()
+    documents_selects = Field()
+
+
+class ExportItem(Item):
+
     title = Field()
-    author = Field()
-    summary = Field()
-    published = Field()
-    updated = Field()
 
 
 class NewsItem(Item):
@@ -26,6 +26,3 @@ class NewsItem(Item):
     doc = Field()
 
 
-class LogItem(Item):
-
-    title = Field()

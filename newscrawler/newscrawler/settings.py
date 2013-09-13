@@ -7,10 +7,11 @@
 #
 
 BOT_NAME = 'newscrawler'
-LOG_LEVEL = 'INFO'
+#LOG_LEVEL = 'INFO'
 SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
+    'newscrawler.pipelines.archive.ArchiveHtml',
 ]
 EXTENSIONS = {
 }
@@ -18,11 +19,13 @@ FEED_FORMAT = 'xml'
 #USER_AGENT = 'newscrawler (+http://www.newscrawler.com)'
 
 
-DOCUMENTS_DIR = 'data'
+DATABASE_DIR = 'data/db'
+ARCHIVEMENT_DIR = 'data/archived'
 
 import os
 try:
-    os.makedirs(DOCUMENTS_DIR)
+    os.makedirs(DATABASE_DIR)
+    os.makedirs(ARCHIVEMENT_DIR)
 except OSError:
     pass
 
