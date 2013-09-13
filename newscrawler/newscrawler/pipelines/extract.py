@@ -9,3 +9,4 @@ class ExtractDocument(object):
     def extract(self, response_item):
         # TODO implement common extract method
         return response_item
+

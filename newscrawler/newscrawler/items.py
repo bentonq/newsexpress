@@ -13,9 +13,17 @@ class ResponseItem(Item):
     document_selects = Field()
 
 
-class ExportItem(Item):
+class BeautifulSoupItem(Item):
 
-    title = Field()
+    soup = Field()
+    response_item = Field()
+
+
+class LogItem(Item):
+
+    docid = Field()
+    url = Field()
+
 
 
 class NewsItem(Item):
@@ -24,5 +32,4 @@ class NewsItem(Item):
     header = Field()
     title = Field()
     doc = Field()
-
 

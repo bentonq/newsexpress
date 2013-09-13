@@ -13,6 +13,9 @@ NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
     'newscrawler.pipelines.archive.ArchiveHtml',
     'newscrawler.pipelines.extract.ExtractDocument',
+    'newscrawler.pipelines.transform.ConvertToBeautifulSoup',
+    'newscrawler.pipelines.transform.ConvertBack',
+    'newscrawler.pipelines.log.ExportLogItem',
 ]
 EXTENSIONS = {
 }
