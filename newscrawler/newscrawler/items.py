@@ -25,7 +25,6 @@ class LogItem(Item):
     url = Field()
 
 
-
 class NewsItem(Item):
 
     id = Field()

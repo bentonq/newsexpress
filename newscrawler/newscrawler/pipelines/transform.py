@@ -11,6 +11,7 @@ class ConvertToBeautifulSoup(object):
         result['response_item'] = item
         return result
 
+
 class ConvertBack(object):
 
     def process_item(self, item, spider):
