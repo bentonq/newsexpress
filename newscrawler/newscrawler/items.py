@@ -10,7 +10,7 @@ class ResponseItem(Item):
 
     docid = Field()
     response = Field()
-    documents_selects = Field()
+    document_selects = Field()
 
 
 class ExportItem(Item):

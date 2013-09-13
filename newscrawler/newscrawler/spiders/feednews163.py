@@ -6,7 +6,7 @@ class FeedNews163Spider(BaseFeedSpider):
     name = 'feed_news_163'
     allowed_domains = ['news.163.com', 'rss.feedsportal.com']
     start_urls = ['http://news.163.com/special/00011K6L/rss_newstop.xml']
-    documents_selects = [
+    document_selects = [
             "//h1[@id='h1title']",
             "//div[@id='endText']/p",
     ]

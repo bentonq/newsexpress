@@ -26,6 +26,8 @@ class FeedColumn(object):
 
 class BaseFeedSpider(BaseSpider):
 
+    document_selects = []
+
     def __init__(self, name=None, **wargs):
         super(BaseFeedSpider, self).__init__(name, **wargs)
         engine = create_engine('sqlite:///%s/feeds.db' % DATABASE_DIR)
@@ -86,7 +88,7 @@ class BaseFeedSpider(BaseSpider):
         item = ResponseItem()
         item['docid'] = self.gen_docid(response.url)
         item['response'] = response
-        item['documents_selects'] = self.documents_selects
+        item['document_selects'] = self.document_selects
         return item
 
     def update_feed_table(self, response):

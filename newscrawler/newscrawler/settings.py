@@ -12,6 +12,7 @@ SPIDER_MODULES = ['newscrawler.spiders']
 NEWSPIDER_MODULE = 'newscrawler.spiders'
 ITEM_PIPELINES = [
     'newscrawler.pipelines.archive.ArchiveHtml',
+    'newscrawler.pipelines.extract.ExtractDocument',
 ]
 EXTENSIONS = {
 }
